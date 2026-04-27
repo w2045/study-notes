@@ -33,38 +33,42 @@ Study/
 └── resources/              # 论文列表、外部链接
 ```
 
-## 每章结构（文件夹模式，按学科类型区分）
+## 每章结构（按学科类型：子目录分类存放）
 
 ### 数学类（线性代数 / 微积分 / 概率论 / 凸优化 / 信息论）
 理论与编程双重练习：
 
 ```
-学科名/XX-章节名/
-├── notes.md         # 参考笔记
-├── homework.tex     # 理论题（LaTeX，留作答区，我读取批改）
-├── homework.py      # 编程题（Python 实现）
-├── grader.py        # 编程题自动批改
-├── solutions.tex    # 理论题答案
-└── solutions.md     # 编程题答案（<details> 折叠）
+XX-章节名/
+├── notes.md
+├── 理论题/
+│   ├── homework.tex     # 理论题（LaTeX，我读取批改）
+│   └── solutions.tex    # 理论题答案
+└── 编程题/
+    ├── homework.md       # 题目描述（≥10 题）
+    ├── homework.py       # 代码骨架
+    ├── grader.py         # 自动批改
+    └── solutions.md       # 编程题答案（<details> 折叠）
 ```
 
 ### 编程类（Python基础 / 数据结构与算法）
 纯编程练习，自动批改：
 
 ```
-学科名/XX-章节名/
+XX-章节名/
 ├── notes.md
-├── homework.md      # 题目描述（≥10 题）
-├── homework.py      # 代码骨架
-├── grader.py        # 自动批改
-└── solutions.md     # 参考答案（<details> 折叠）
+└── 作业/
+    ├── homework.md      # 题目描述（≥10 题）
+    ├── homework.py      # 代码骨架
+    ├── grader.py        # 自动批改
+    └── solutions.md      # 参考答案（<details> 折叠）
 ```
 
 ### 工具类（基础工具）
-轻量练习，手动检查：
+文件少，不建子目录：
 
 ```
-学科名/XX-章节名/
+XX-章节名/
 ├── notes.md
 ├── homework.md      # 练习题（6-8 题）
 └── solutions.md     # 参考答案（<details> 折叠）
