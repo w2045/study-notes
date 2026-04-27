@@ -65,15 +65,86 @@ $$p_A(\lambda) = \det\begin{bmatrix} 2-\lambda & 1 \\ 1 & 2-\lambda \end{bmatrix
 
 ## 4. 特征空间与代数/几何重数
 
-> **定义 3（特征空间）**：$\lambda$ 的特征空间 $E_\lambda = \ker(A - \lambda I)$。
+### 4.1 动机：一个数 vs 一个维数
 
-> **定义 4**：
-> - **代数重数**：$\lambda$ 作为特征多项式根的重数
-> - **几何重数**：$\dim E_\lambda$（特征空间的维数 = 对应特征值线性无关特征向量的最大个数）
+特征值 $\lambda = 3$ 在特征多项式中出现了 2 次。真正的问题是：能找出**几个线性无关的特征向量**属于 $\lambda = 3$？答案可能是 2 个（矩阵可对角化），也可能只有 1 个（矩阵有缺陷！）。
 
-**关键事实**：$1 \leq \text{几何重数} \leq \text{代数重数}$。
+这两个数字——特征根的重数 vs 特征空间的维数——是区分「好矩阵」和「坏矩阵」的关键。
 
-当几何重数 < 代数重数时，矩阵不能对角化（需要 Jordan 型，见第 07 章）。
+### 4.2 定义
+
+> **定义 3（特征空间）**：特征值 $\lambda$ 的**特征空间** $E_\lambda = \ker(A - \lambda I) = \operatorname{Null}(A - \lambda I)$。即所有满足 $A\mathbf{v} = \lambda \mathbf{v}$ 的向量（加上零向量）构成的子空间。
+
+> **定义 4（两种重数）**：
+> - **代数重数 (algebraic multiplicity)** $a(\lambda)$：$\lambda$ 作为特征多项式根的重数。例如 $p(\lambda) = (\lambda-3)^2(\lambda-1)$ 中 $a(3) = 2$, $a(1) = 1$。
+> - **几何重数 (geometric multiplicity)** $g(\lambda)$：特征空间 $E_\lambda$ 的维数。即属于 $\lambda$ 的线性无关特征向量的最大个数。
+
+**通用关系**：$1 \leq g(\lambda) \leq a(\lambda)$。几何重数永远不超过代数重数，也永远至少为 1（因为特征方程保证至少存在一个非零解）。
+
+### 4.3 如何计算
+
+**代数重数**：对 $p_A(\lambda)$ 做因式分解，直接读出各因式的指数。
+**几何重数**：对每个 $\lambda$，解 $(A - \lambda I)\mathbf{x} = \mathbf{0}$。关键公式：
+$$g(\lambda) = n - \operatorname{rank}(A - \lambda I)$$
+这是因为零空间的维数 = $n$ - 矩阵的秩（秩-零化度定理，Ch05 §5.2）。操作上就是将 $A - \lambda I$ 化为 RREF，数自由变量的个数。
+
+### 4.4 并排对比：相同代数重数，不同几何重数
+
+**示例 1：缺陷矩阵** — $A = \begin{bmatrix} 3 & 1 \\ 0 & 3 \end{bmatrix}$。
+
+$p(\lambda) = \det\begin{bmatrix}3-\lambda&1\\0&3-\lambda\end{bmatrix} = (3-\lambda)^2$ → $a(3) = 2$。
+
+$(A - 3I) = \begin{bmatrix}0&1\\0&0\end{bmatrix}$，秩 = 1，故 $g(3) = n - \operatorname{rank}(A-3I) = 2 - 1 = 1$。
+
+特征空间仅由 $[c, 0]^T$ 张成。$g(3) = 1 < a(3) = 2$ → **不可对角化**（有缺陷，需要 Jordan 型）。
+
+**示例 2：可对角化矩阵** — $A = \begin{bmatrix} 3 & 0 \\ 0 & 3 \end{bmatrix}$。
+
+$p(\lambda) = (3-\lambda)^2$ → $a(3) = 2$（同示例 1）。
+
+$(A - 3I) = \begin{bmatrix}0&0\\0&0\end{bmatrix}$（零矩阵），秩 = 0，故 $g(3) = 2 - 0 = 2$。
+
+特征空间是整个 $\mathbb{R}^2$。$g(3) = a(3) = 2$ → **可对角化**（已经是对角矩阵）。
+
+**示例 3：$3 \times 3$ Jordan 块** — $A = \begin{bmatrix} 2 & 1 & 0 \\ 0 & 2 & 1 \\ 0 & 0 & 2 \end{bmatrix}$。
+
+$p(\lambda) = (2-\lambda)^3$ → $a(2) = 3$。
+
+$(A - 2I) = \begin{bmatrix}0&1&0\\0&0&1\\0&0&0\end{bmatrix}$，rank = 2（两个非零行），$g(2) = 3 - 2 = 1$。
+
+只有一个独立特征向量 $[1,0,0]^T$，但需要 3 个 → **严重缺陷**，需要一个 $3 \times 3$ 的 Jordan 块。
+
+| | 示例 1 (缺陷) | 示例 2 (好) | 示例 3 (Jordan) |
+|---|---|---|---|
+| 代数重数 $a$ | 2 | 2 | 3 |
+| $\operatorname{rank}(A - \lambda I)$ | 1 | 0 | 2 |
+| 几何重数 $g$ | 1 | 2 | 1 |
+| 结论 | $g < a$ 不可对角化 | $g = a$ 可对角化 | $g < a$ 需 Jordan 块 |
+
+### 4.5 缺陷性与 Jordan 型预告
+
+当 $g(\lambda) < a(\lambda)$ 时，矩阵**有缺陷 (defective)**——缺少足够的特征向量来构成 $\mathbb{R}^n$ 的基。此时需要**广义特征向量 (generalized eigenvector)**：满足 $(A - \lambda I)^k \mathbf{v} = \mathbf{0}$（$k \geq 2$）的向量，以填补缺失的维数。这些广义特征向量构成 **Jordan 链**，详细见 Ch07 §5。
+
+### 4.6 应用：$e^{At}$ 与微分方程
+
+对于常系数线性微分方程 $\dot{\mathbf{x}} = A\mathbf{x}$，解为 $\mathbf{x}(t) = e^{At}\mathbf{x}(0)$。
+
+- **若 $A$ 可对角化**（$g = a$ 对所有特征值）：$e^{At} = P \operatorname{diag}(e^{\lambda_1 t}, \ldots, e^{\lambda_n t}) P^{-1}$。简单明了。
+- **若 $A$ 有缺陷**（$g < a$）：$e^{At}$ 包含形如 $t^k e^{\lambda t}$ 的项——纯指数 × 多项式。这使得解可能出现**瞬态增长**（$t e^{\lambda t}$ 型），即使 $\lambda < 0$。
+
+这在控制系统和结构力学中至关重要：有缺陷的系统可能表现出比特征值预期更「慢」或更「不稳定」的行为。
+
+### 4.7 复特征值处理
+
+实矩阵可能有复共轭特征值对（如 $\lambda = a \pm bi$）。此时：
+- 特征向量也是复共轭的：$\mathbf{v}$, $\overline{\mathbf{v}}$
+- 在实空间中，变换表现为**旋转 + 缩放**
+- $e^{At}$ 产生 $\sin/\cos$ 振荡项
+
+**示例**：$A = \begin{bmatrix} 0 & -1 \\ 1 & 0 \end{bmatrix}$（旋转 $90^\circ$）。$p(\lambda) = \lambda^2 + 1$，$\lambda = \pm i$。
+- $\lambda = i$：$(A - iI)\mathbf{v} = \mathbf{0} \implies \mathbf{v} = [1, -i]^T$
+- $\lambda = -i$：$\mathbf{v} = [1, i]^T$（前者的共轭）
+- $e^{At} = \begin{bmatrix} \cos t & -\sin t \\ \sin t & \cos t \end{bmatrix}$——这正是旋转矩阵！
 
 ---
 
@@ -225,10 +296,12 @@ $(A - I)\mathbf{v} = \begin{bmatrix}0&1\\0&0\end{bmatrix}\mathbf{v} = \mathbf{0}
 | 误区 | 正确理解 |
 |------|----------|
 | 「特征向量只有一个」 | 一个特征值对应一个特征空间，里面有无穷多个特征向量（零向量除外） |
-| 「所有矩阵都可对角化」 | 如 $\begin{bmatrix}1&1\\0&1\end{bmatrix}$ 不可对角化 |
-| 「特征值必然是实数」 | 一般实矩阵的特征值可能是复数。仅实对称矩阵保证实数 |
+| 「所有矩阵都可对角化」 | 不可对角化的充要条件：存在某个 $\lambda$ 使 $g(\lambda) < a(\lambda)$ |
+| 「特征值必然是实数」 | 一般实矩阵的特征值可能是复数。仅实对称/Hermitian 矩阵保证实数 |
 | 「特征向量必然正交」 | 仅实对称（更一般：正规矩阵）的不同特征值对应特征向量正交 |
 | 「$\det A = 0$ 就是 $A = 0$」 | $\det A = 0$ 意味着 0 是特征值，空间被「压扁」但可能还有其他方向 |
+| 「代数重数 = 几何重数永远成立」 | 仅在矩阵可对角化时成立。$\begin{bmatrix}0&1\\0&0\end{bmatrix}$ 的 $\lambda=0$ 有 $a=2$, $g=1$ |
+| 「$e^{At}$ 只含指数项」 | 若矩阵有缺陷，$e^{At}$ 含 $t^k e^{\lambda t}$ 项——瞬态多项式增长 |
 
 ---
 

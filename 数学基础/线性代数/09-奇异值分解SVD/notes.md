@@ -127,7 +127,82 @@ $$\text{能量保留} = \frac{\sum_{i=1}^{k} \sigma_i^2}{\sum_{i=1}^{r} \sigma_i
 
 ---
 
-## 8. 概念演示：SVD 低秩近似的压缩效果
+## 8. Moore-Penrose 伪逆 (Pseudoinverse)
+
+### 8.1 动机：当逆矩阵不存在时
+
+方阵可逆时，$A^{-1}$ 完美解 $A\mathbf{x} = \mathbf{b}$。但是：
+- **矩形矩阵**（$m \neq n$）：变换改变了空间维数，不可能有双边逆
+- **秩亏方阵**（$\det = 0$）：零空间非平凡，映射不可逆
+
+我们需要一个**对所有矩阵都存在**的「广义逆」——Moore-Penrose 伪逆 $A^+$。
+
+### 8.2 Penrose 四条件
+
+> **定义（Moore-Penrose 伪逆）**：$A \in \mathbb{R}^{m \times n}$ 的伪逆 $A^+ \in \mathbb{R}^{n \times m}$ 是满足以下四个条件的**唯一**矩阵：
+>
+> 1. $A A^+ A = A$（$A^+$ 是 $A$ 的广义逆）
+> 2. $A^+ A A^+ = A^+$（$A$ 是 $A^+$ 的广义逆）
+> 3. $(A A^+)^T = A A^+$（$A A^+$ 是对称矩阵——它是正交投影）
+> 4. $(A^+ A)^T = A^+ A$（$A^+ A$ 也是对称矩阵——它也是正交投影）
+
+这四个条件看起来简洁，但它们**唯一确定**了 $A^+$。普通的逆 $A^{-1}$ 自然满足全部四条（此时 $A^+ = A^{-1}$）。
+
+### 8.3 SVD 表达式
+
+$$A = U \Sigma V^T \quad \implies \quad A^+ = V \Sigma^+ U^T$$
+
+其中 $\Sigma^+$ 是对 $\Sigma$ 的每个非零奇异值取倒数、零保持为零的对角矩阵（适当转置形状）：
+$$\Sigma = \begin{bmatrix} \sigma_1 & & & \\ & \ddots & & \\ & & \sigma_r & \\ & & & 0 \end{bmatrix}_{m \times n} \quad \implies \quad \Sigma^+ = \begin{bmatrix} 1/\sigma_1 & & & \\ & \ddots & & \\ & & 1/\sigma_r & \\ & & & 0 \end{bmatrix}_{n \times m}$$
+
+验证 Penrose 条件：$A A^+ = U \Sigma V^T V \Sigma^+ U^T = U (\Sigma \Sigma^+) U^T$。而 $\Sigma \Sigma^+ = \begin{bmatrix} I_r & 0 \\ 0 & 0 \end{bmatrix}_{m \times m}$ 是对称幂等矩阵。$(A A^+)^T = A A^+$ ✓。其余同理。
+
+### 8.4 伪逆与四个基本子空间（SVD 视角）
+
+SVD 为四个基本子空间提供了**标准正交基**（对比 Ch04 §11 中从 RREF 提取的基）：
+
+| 子空间 | 维数 | SVD 标准正交基 |
+|--------|------|---------------|
+| $\operatorname{Col}(A)$ | $r$ | $\{\mathbf{u}_1, \ldots, \mathbf{u}_r\}$ |
+| $\operatorname{Row}(A)$ | $r$ | $\{\mathbf{v}_1, \ldots, \mathbf{v}_r\}$ |
+| $\operatorname{Null}(A)$ | $n - r$ | $\{\mathbf{v}_{r+1}, \ldots, \mathbf{v}_n\}$ |
+| $\operatorname{Null}(A^T)$ | $m - r$ | $\{\mathbf{u}_{r+1}, \ldots, \mathbf{u}_m\}$ |
+
+其中 $\mathbf{u}_i$ 是 $U$ 的列（左奇异向量），$\mathbf{v}_i$ 是 $V$ 的列（右奇异向量）。
+
+**正交投影关系**：
+- $A A^+ = U_r U_r^T$ 是到 $\operatorname{Col}(A)$ 的**正交投影矩阵**
+- $A^+ A = V_r V_r^T$ 是到 $\operatorname{Row}(A)$ 的**正交投影矩阵**
+- $I - A A^+$ 是到 $\operatorname{Null}(A^T)$ 的正交投影
+- $I - A^+ A$ 是到 $\operatorname{Null}(A)$ 的正交投影
+
+这完美体现了 Ch04 §11.5 的四个子空间关系和正交直和分解——SVD 为这些分解提供了标准正交基。
+
+### 8.5 伪逆解最小二乘
+
+对于 $A\mathbf{x} = \mathbf{b}$，**不论 $A$ 是否可逆**：
+
+$$\mathbf{x}^+ = A^+ \mathbf{b}$$
+
+是以下最小二乘问题的**最小范数解**：
+$$\mathbf{x}^+ = \arg\min_{\mathbf{x}} \|\mathbf{x}\|_2 \quad \text{s.t.} \quad \|A\mathbf{x} - \mathbf{b}\|_2 \text{ 最小}$$
+
+**特殊情况**：
+- 若 $A$ 列满秩（$r = n$）：$A^+ = (A^T A)^{-1} A^T$，$\mathbf{x}^+$ 就是正规方程的唯一解
+- 若 $A$ 行满秩（$r = m$）：$A^+ = A^T (A A^T)^{-1}$，$\mathbf{x}^+$ 是欠定系统的最小范数解
+- 若 $A$ 可逆：$A^+ = A^{-1}$，$\mathbf{x}^+ = A^{-1}\mathbf{b}$（唯一解）
+
+### 8.6 计算示例
+
+$A = \begin{bmatrix} 1 & 2 \\ 2 & 4 \end{bmatrix}$（秩 1，不可逆）。SVD：$A = \begin{bmatrix} 1/\sqrt{5} & -2/\sqrt{5} \\ 2/\sqrt{5} & 1/\sqrt{5} \end{bmatrix} \begin{bmatrix} 5 & 0 \\ 0 & 0 \end{bmatrix} \begin{bmatrix} 1/\sqrt{5} & 2/\sqrt{5} \\ -2/\sqrt{5} & 1/\sqrt{5} \end{bmatrix}^T$
+
+$$\Sigma^+ = \begin{bmatrix} 1/5 & 0 \\ 0 & 0 \end{bmatrix}, \quad A^+ = V \Sigma^+ U^T = \frac{1}{25} \begin{bmatrix} 1 & 2 \\ 2 & 4 \end{bmatrix}$$
+
+验证：$A A^+ A = A$ ✓，$A^+ A A^+ = A^+$ ✓，$A A^+$ 对称 ✓，$A^+ A$ 对称 ✓。
+
+---
+
+## 9. 概念演示：SVD 低秩近似的压缩效果
 
 > 本章的编程练习在 `编程题/` 目录下。运行 `python3 grader.py` 自动批改。
 
@@ -155,7 +230,7 @@ print(f"误差 σ2: {error:.1f} vs σ2: {s[1]:.1f}")  # 误差 ≈ σ2 — Eckar
 
 ---
 
-## 9. 例题
+## 10. 例题
 
 ### 例 1：2x2 SVD
 
@@ -197,7 +272,7 @@ $$M = \begin{bmatrix} 1 & 2 & 1 \\ 2 & 4 & 2 \\ 1 & 2 & 1 \\ 3 & 6 & 3 \end{bmat
 
 ---
 
-## 10. 常见误区
+## 11. 常见误区
 
 | 误区 | 正确理解 |
 |------|----------|
@@ -207,6 +282,9 @@ $$M = \begin{bmatrix} 1 & 2 & 1 \\ 2 & 4 & 2 \\ 1 & 2 & 1 \\ 3 & 6 & 3 \end{bmat
 | 「SVD 可以随便排序」 | 约定按 $\sigma_1 \geq \sigma_2 \geq \cdots \geq \sigma_r > 0$ 排序。重排会破坏 $U, V$ 的对应关系 |
 | 「紧 SVD 的 $U_r$ 是方阵」 | 紧 SVD 中 $U_r \in \mathbb{R}^{m \times r}$，只有当 $m = r$ 时才是方阵 |
 | 「低秩近似 = 随便删几个奇异值」 | Eckart-Young 定理保证截断 SVD 是**所有**同秩矩阵中的最优近似——这是 SVD 独有的性质 |
+| 「伪逆就是 $(A^T A)^{-1} A^T$」 | 这个公式仅在 $A$ 列满秩时成立。一般公式是 $A^+ = V\Sigma^+ U^T$ |
+| 「左/右奇异向量就是特征向量」 | 左奇异向量是 $AA^T$ 的特征向量，右奇异向量是 $A^T A$ 的特征向量——它们是不同矩阵的 |
+| 「四个子空间只能从 RREF 求基」 | SVD 直接给出四个子空间的**标准正交基**，比 RREF 提取的基更「干净」 |
 
 ---
 
@@ -221,7 +299,9 @@ $$M = \begin{bmatrix} 1 & 2 & 1 \\ 2 & 4 & 2 \\ 1 & 2 & 1 \\ 3 & 6 & 3 \end{bmat
 | 紧 SVD | $U_r \Sigma_r V_r^T$ | 只保留正奇异值 |
 | 低秩近似 | $A_k = \sum_{i=1}^k \sigma_i \mathbf{u}_i\mathbf{v}_i^T$ | 最佳秩-k 近似 |
 | Eckart-Young | $\|A-A_k\|_2 = \sigma_{k+1}$ | 截断 SVD 最优 |
-| 伪逆 | $A^+ = V\Sigma^+ U^T$ | 最小二乘的通解 |
+| 伪逆 | $A^+ = V\Sigma^+ U^T$ | 最小二乘的最小范数解 |
+| Penrose 条件 | 4 条公理 | 伪逆的唯一定义 |
+| 四子空间 (SVD) | $\mathbf{u}_i, \mathbf{v}_i$ 基 | SVD 给出四个子空间的标准正交基 |
 
 ---
 

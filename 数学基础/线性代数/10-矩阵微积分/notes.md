@@ -36,9 +36,44 @@
 | $\|A\mathbf{x} - \mathbf{b}\|^2$ | $2A^T(A\mathbf{x} - \mathbf{b})$ |
 | $\log(\mathbf{a}^T \mathbf{x})$ | $\mathbf{a} / (\mathbf{a}^T \mathbf{x})$ |
 
-### 2.3 推导关键方法
+### 2.3 推导演示：从定义出发
 
-**全微分法**（推荐）：
+**示例 1**：$f(\mathbf{x}) = \mathbf{b}^T \mathbf{x} = \sum_i b_i x_i$。
+
+逐分量：$\frac{\partial f}{\partial x_j} = \frac{\partial}{\partial x_j} (b_1 x_1 + \cdots + b_j x_j + \cdots + b_n x_n) = b_j$。
+
+所有偏导拼成向量：$\nabla_\mathbf{x} f = [b_1, \ldots, b_n]^T = \mathbf{b}$。简洁明了——线性函数的梯度就是系数向量。
+
+**示例 2**：$f(\mathbf{x}) = \mathbf{x}^T A \mathbf{x} = \sum_{i,j} a_{ij} x_i x_j$（$A$ 对称）。
+
+逐分量（对 $x_k$ 求偏导）：
+- $i=k, j=k$：项 $a_{kk} x_k^2$，导数为 $2a_{kk} x_k$
+- $i=k, j \neq k$：项 $a_{kj} x_k x_j$，导数为 $a_{kj} x_j$
+- $i \neq k, j=k$：项 $a_{ik} x_i x_k$，导数为 $a_{ik} x_i$
+
+全部加和：
+$$\frac{\partial f}{\partial x_k} = 2a_{kk} x_k + \sum_{j \neq k} a_{kj} x_j + \sum_{i \neq k} a_{ik} x_i$$
+
+由于 $A$ 对称（$a_{ik} = a_{ki}$），后两项合并为 $2\sum_{j \neq k} a_{kj} x_j$。故 $\frac{\partial f}{\partial x_k} = 2\sum_j a_{kj} x_j$ = $2(A\mathbf{x})_k$。
+
+所有偏导拼成向量：$\nabla_\mathbf{x} f = 2A\mathbf{x}$。
+
+如果 $A$ 不对称呢？后两项分别为 $\sum a_{kj} x_j$（来自 $i=k$）和 $\sum a_{ik} x_i$（来自 $j=k$）：
+$$\nabla_\mathbf{x} f = A\mathbf{x} + A^T \mathbf{x} = (A + A^T)\mathbf{x}$$
+
+### 2.4 布局约定说明
+
+矩阵微积分有两个主流约定，**不可混用**：
+
+| | 分母布局 (Denominator layout) | 分子布局 (Numerator layout) |
+|---|---|---|
+| $\nabla_\mathbf{x} f$ | **列向量**（与 $\mathbf{x}$ 同形） | 行向量 |
+| $\frac{\partial \mathbf{f}}{\partial \mathbf{x}}$ | $n \times m$（Jacobian 的转置） | $m \times n$ |
+| $\frac{\partial f}{\partial X}$ | 与 $X^T$ 同形 | 与 $X$ 同形 |
+
+本项目**统一使用分母布局**（$\nabla_\mathbf{x} f$ 是列向量，$\nabla_X f$ 与 $X$ 同形）。在阅读论文时需验证对方使用的约定——同一公式在两种约定下可能差一个转置。
+
+### 2.5 全微分法（推荐用于复杂推导）
 1. 对 $f$ 取全微分：$df = \sum_i \frac{\partial f}{\partial x_i} dx_i$
 2. 整理为 $df = \mathbf{g}^T d\mathbf{x}$ 的形式
 3. 则 $\nabla f = \mathbf{g}$

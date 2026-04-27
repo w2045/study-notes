@@ -87,6 +87,14 @@
 
 > **关键认知**：线性组合的能力取决于「给的方向有多独立」。这就是下一节「线性无关」要量化的。
 
+### 4.1 从线性组合到矩阵-向量乘法（桥接 Ch03）
+
+将 $k$ 个向量 $\mathbf{v}_1, \ldots, \mathbf{v}_k \in \mathbb{R}^n$ 作为列排成一个 $n \times k$ 矩阵 $A$，将系数 $c_1, \ldots, c_k$ 放入向量 $\mathbf{x}$。则线性组合**等价于矩阵-向量乘法**：
+
+$$\mathbf{w} = c_1\mathbf{v}_1 + \cdots + c_k\mathbf{v}_k = A\mathbf{x}, \quad A = [\mathbf{v}_1 \mid \cdots \mid \mathbf{v}_k], \quad \mathbf{x} = [c_1, \ldots, c_k]^T$$
+
+这是线性代数**最核心的视角转换**：线性组合 → 矩阵乘向量 → 线性变换。从此「给定向量组能拼出什么」等价于「矩阵 $A$ 的列空间是什么」——这一思想贯穿全书。
+
 ---
 
 ## 5. 张成空间 (Span)
@@ -105,6 +113,11 @@
 | 只有零向量 | 原点 $\{\mathbf{0}\}$ |
 
 **运算视角**：「这些向量能生成什么？」——这是线性代数从头到尾反复问的问题。
+
+**张成空间的计算演示**：$\mathbf{v}_1 = [1,0,1]^T$, $\mathbf{v}_2 = [2,1,0]^T$, $\mathbf{v}_3 = [1,1,-1]^T$ 张成什么？
+将三个向量作为列排成矩阵，化为 REF：
+$$\begin{bmatrix} 1 & 2 & 1 \\ 0 & 1 & 1 \\ 1 & 0 & -1 \end{bmatrix} \xrightarrow{R_3-R_1} \begin{bmatrix} 1 & 2 & 1 \\ 0 & 1 & 1 \\ 0 & -2 & -2 \end{bmatrix} \xrightarrow{R_3+2R_2} \begin{bmatrix} 1 & 2 & 1 \\ 0 & 1 & 1 \\ 0 & 0 & 0 \end{bmatrix}$$
+秩 = 2 → 只有 2 个独立方向 → $\operatorname{span} = \mathbb{R}^3$ 中的一个二维平面。具体来说，$\mathbf{v}_3 = \mathbf{v}_2 - \mathbf{v}_1$（线性相关）。（消元法的系统介绍见 Ch04。）
 
 ---
 

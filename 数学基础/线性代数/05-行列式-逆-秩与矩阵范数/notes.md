@@ -30,6 +30,10 @@ $\mathbb{R}^3$ 中：$\det(A)$ = 变换后平行六面体的**有向体积**。
 - $\det(A) > 0$：保持定向
 - $\det(A) < 0$：反转定向（如反射）
 
+**体积计算示例**：
+- $A = \begin{bmatrix} 3 & 1 \\ 1 & 2 \end{bmatrix}$ 将单位正方形变为有向面积 $\det(A) = 3 \cdot 2 - 1 \cdot 1 = 5$ 的平行四边形。顶点：$(0,0), (3,1), (4,3), (1,2)$。
+- $B = \begin{bmatrix} 1 & 0 & 0 \\ 1 & 1 & 0 \\ 1 & 1 & 1 \end{bmatrix}$ 将单位立方体变为体积 $|\det(B)| = 1$ 的平行六面体（三棱：$\mathbf{e}_1, [1,1,0]^T, [1,1,1]^T$）。
+
 ### 2.2 公理化定义
 
 > **定义 1（行列式公理）**：函数 $\det: \mathbb{R}^{n \times n} \to \mathbb{R}$ 满足：
@@ -146,13 +150,23 @@ $$A^{-1} = \frac{1}{\det(A)} \operatorname{adj}(A)$$
 
 ### 5.2 秩-零化度定理
 
-> **定理**：对 $m \times n$ 矩阵 $A$：
+> **定理（秩-零化度 / Rank-Nullity）**：对 $m \times n$ 矩阵 $A$（等价地，线性变换 $T_A: \mathbb{R}^n \to \mathbb{R}^m$）：
 >
-> $$\dim(\ker A) + \operatorname{rank}(A) = n$$
+> $$\dim(\operatorname{Null}(A)) + \operatorname{rank}(A) = n$$
 >
-> 即 $\operatorname{rank}(A) = n - \dim(\ker A)$（输入维数 = 零空间维数 + 列空间维数）。
+> 用线性变换语言：$\dim(\ker T_A) + \dim(\operatorname{im} T_A) = \dim(\text{定义域})$。
 
-**零空间** $\ker A = \{\mathbf{x} \mid A\mathbf{x} = \mathbf{0}\}$。定理说：秩越大，零空间越小；满秩时零空间为零。
+**含义**：输入空间的维数 $n$ 被 $A$ 一分为二——一部分被「压扁」到零（$\operatorname{Null}(A)$），一部分被一一映射到列空间（$\operatorname{Row}(A)$）。秩越大，零空间越小；满秩（$\operatorname{rank} = n$）时零空间为 $\{\mathbf{0}\}$，$A$ 是单射。
+
+**严格证明**：
+1. 设 $\dim(\operatorname{Null}(A)) = k$。取 $\operatorname{Null}(A)$ 的一组基 $\{\mathbf{v}_1, \ldots, \mathbf{v}_k\}$。
+2. 将其扩充为 $\mathbb{R}^n$ 的一组基：$\{\mathbf{v}_1, \ldots, \mathbf{v}_k, \mathbf{u}_1, \ldots, \mathbf{u}_{n-k}\}$。
+3. 我们断言 $\{A\mathbf{u}_1, \ldots, A\mathbf{u}_{n-k}\}$ 是 $\operatorname{Col}(A)$ 的一组基。
+4. **线性无关**：设 $\sum c_j A\mathbf{u}_j = \mathbf{0}$。则 $A(\sum c_j \mathbf{u}_j) = \mathbf{0}$，即 $\sum c_j \mathbf{u}_j \in \operatorname{Null}(A)$。但 $\mathbf{u}_j$ 均不在 $\operatorname{Null}(A)$ 中（否则与扩充基的构造矛盾），故所有 $c_j = 0$。
+5. **张成**：对任意 $A\mathbf{x} \in \operatorname{Col}(A)$，将 $\mathbf{x}$ 在扩充基下展开：$\mathbf{x} = \sum \alpha_i \mathbf{v}_i + \sum \beta_j \mathbf{u}_j$。则 $A\mathbf{x} = \sum \beta_j A\mathbf{u}_j$（因为 $A\mathbf{v}_i = \mathbf{0}$）。
+6. 因此 $\{A\mathbf{u}_1, \ldots, A\mathbf{u}_{n-k}\}$ 确实是 $\operatorname{Col}(A)$ 的基，$\operatorname{rank}(A) = \dim(\operatorname{Col}(A)) = n - k$。证毕
+
+> **连接 Ch03-Ch04**：$\ker T_A = \operatorname{Null}(A)$（Ch03 §4.2），$\operatorname{im} T_A = \operatorname{Col}(A)$（Ch03 §4.2），四个基本子空间的关系见 Ch04 §11。
 
 ---
 

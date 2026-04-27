@@ -119,35 +119,116 @@ $$\lambda_k = \min_{\dim V = k} \max_{\mathbf{x} \in V, \mathbf{x} \neq \mathbf{
 
 ### 5.1 动机
 
-当几何重数 < 代数重数时，矩阵不可对角化。Jordan 标准形是「最接近对角化」的形式。
+当几何重数 < 代数重数时，矩阵不可对角化。Jordan 标准形是「最接近对角化」的形式——它把矩阵变成对角线上是特征值、上对角线上可能有 1 的块对角矩阵。
 
 > **定义 2（Jordan 块）**：$k \times k$ Jordan 块：
 >
 > $$J_k(\lambda) = \begin{bmatrix} \lambda & 1 & 0 & \cdots & 0 \\ 0 & \lambda & 1 & \cdots & 0 \\ 0 & 0 & \lambda & \ddots & \vdots \\ \vdots & \vdots & & \ddots & 1 \\ 0 & 0 & \cdots & 0 & \lambda \end{bmatrix}$$
 
-> **定义 3（Jordan 标准形）**：任意方阵 $A$（在代数闭域上）相似于一个分块对角矩阵，每个块是 Jordan 块：
+> **定义 3（Jordan 标准形）**：任意方阵 $A$（在代数闭域上）相似于分块对角矩阵：
 >
 > $$A = P \, J \, P^{-1}, \quad J = \begin{bmatrix} J_{k_1}(\lambda_1) & & \\ & \ddots & \\ & & J_{k_m}(\lambda_m) \end{bmatrix}$$
 
 ### 5.2 Jordan 链
 
-对于 Jordan 块 $J_k(\lambda)$，除了普通的特征向量（满足 $(A - \lambda I)\mathbf{v} = \mathbf{0}$），还有**广义特征向量**：
+对于大小为 $k$ 的 Jordan 块 $J_k(\lambda)$，存在一条**Jordan 链**（或广义特征向量链）：
 
 $$(A - \lambda I)\mathbf{v}_1 = \mathbf{0}$$
 $$(A - \lambda I)\mathbf{v}_2 = \mathbf{v}_1$$
 $$\vdots$$
 $$(A - \lambda I)\mathbf{v}_k = \mathbf{v}_{k-1}$$
 
-这 $k$ 个向量构成一个**Jordan 链**。
+$\mathbf{v}_1$ 是普通特征向量，$\mathbf{v}_2, \ldots, \mathbf{v}_k$ 是**广义特征向量**——它们满足 $(A - \lambda I)^k \mathbf{v}_k = \mathbf{0}$ 但 $(A - \lambda I)^{k-1} \mathbf{v}_k \neq \mathbf{0}$。
 
-### 5.3 例子
+### 5.3 系统性算法：从任意矩阵求 Jordan 型
 
-$A = \begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}$。
+之前的所有例子都是「矩阵本身已经是 Jordan 型」——这不是算法。下面是对**任意**矩阵的系统性步骤。
 
-特征值 $\lambda = 1$（二重代数），但只有一个特征向量 $\mathbf{v}_1 = [1, 0]^T$。
-广义特征向量：$(A - I)\mathbf{v}_2 = \mathbf{v}_1 \implies \begin{bmatrix}0&1\\0&0\end{bmatrix}\mathbf{v}_2 = \begin{bmatrix}1\\0\end{bmatrix} \implies \mathbf{v}_2 = [0, 1]^T$。
+**算法输入**：方阵 $A \in \mathbb{R}^{n \times n}$。
 
-Jordan 型：$A = \begin{bmatrix}1&0\\0&1\end{bmatrix} \begin{bmatrix}1&1\\0&1\end{bmatrix} \begin{bmatrix}1&0\\0&1\end{bmatrix}^{-1}$ = 本身已为 Jordan 块。
+**步骤 1：求特征值与代数重数**
+计算特征多项式 $p_A(\lambda) = \det(A - \lambda I)$，因式分解得各特征值 $\lambda_i$ 和代数重数 $a(\lambda_i)$。
+
+**步骤 2：对每个特征值，计算几何重数**
+几何重数 $g(\lambda) = n - \operatorname{rank}(A - \lambda I)$。这也是 **Jordan 块的个数**。
+
+**步骤 3：通过 $\operatorname{rank}(A - \lambda I)^k$ 确定块大小（核心步骤！）**
+计算数列：
+$$r_k = \operatorname{rank}((A - \lambda I)^k), \quad k = 1, 2, 3, \ldots$$
+直到 $r_k$ 稳定在 $n - a(\lambda)$（代数重数处停止）。
+
+定义 $r_0 = n$。差分：
+$$d_k = r_{k-1} - r_k \quad (\text{大小为至少 } k \text{ 的 Jordan 块的数量})$$
+则大小为**恰好** $k$ 的 Jordan 块数量 = $d_k - d_{k+1}$。
+
+**直觉**：每次乘 $(A - \lambda I)$ 会让秩下降，直到触及 $(A - \lambda I)$ 的零空间的最大维数。秩下降的速度直接反映 Jordan 块的尺寸分布。
+
+**步骤 4：构造 Jordan 链（广义特征向量）**
+对每个大小为 $k$ 的块：
+1. 找 $\mathbf{v}_k \in \ker((A - \lambda I)^k)$ 但 $\mathbf{v}_k \notin \ker((A - \lambda I)^{k-1})$
+2. 递推构造：$\mathbf{v}_{k-1} = (A - \lambda I)\mathbf{v}_k$, $\mathbf{v}_{k-2} = (A - \lambda I)\mathbf{v}_{k-1}$, ...
+3. 将链 $\mathbf{v}_1, \ldots, \mathbf{v}_k$ 按顺序放入 $P$ 的列
+
+**步骤 5**：组装 $P$ 和 $J$，验证 $P^{-1}AP = J$。
+
+### 5.4 完整示例：一个非平凡的 $3 \times 3$ 矩阵
+
+$$A = \begin{bmatrix} 5 & 4 & 2 \\ 0 & 3 & 1 \\ 0 & 0 & 3 \end{bmatrix}$$
+
+注意：$A$ 是否已经在 Jordan 型？不——$\lambda=3$ 的位置不是标准 Jordan 块结构。我们需要求出它的 Jordan 型。
+
+**步骤 1**：$A$ 是上三角矩阵，特征值在对角线上：$\lambda_1 = 5$（$a = 1$），$\lambda_2 = 3$（$a = 2$）。
+
+**步骤 2（对 $\lambda = 5$）**：$a(5) = 1$ → 必有一个 $1 \times 1$ Jordan 块。$g(5) = 1$。完成。
+
+**步骤 3（对 $\lambda = 3$）**：
+$$A - 3I = \begin{bmatrix} 2 & 4 & 2 \\ 0 & 0 & 1 \\ 0 & 0 & 0 \end{bmatrix}$$
+
+消元：$R_1 - 2R_2$ 得 $\begin{bmatrix} 2 & 4 & 0 \\ 0 & 0 & 1 \\ 0 & 0 & 0 \end{bmatrix}$。$r_1 = \operatorname{rank}(A-3I) = 2$。故 $g(3) = n - r_1 = 3 - 2 = 1$ → 只有 **1 个** Jordan 块。
+
+现在计算 $(A - 3I)^2$：
+$$(A - 3I)^2 = \begin{bmatrix} 2 & 4 & 2 \\ 0 & 0 & 1 \\ 0 & 0 & 0 \end{bmatrix} \begin{bmatrix} 2 & 4 & 2 \\ 0 & 0 & 1 \\ 0 & 0 & 0 \end{bmatrix} = \begin{bmatrix} 4 & 8 & 8 \\ 0 & 0 & 0 \\ 0 & 0 & 0 \end{bmatrix}$$
+
+$r_2 = \operatorname{rank}((A-3I)^2) = 1$（行成比例）。$(A-3I)^3 = 0$ 矩阵（因为 $n - a(3) = 3 - 2 = 1$，$r_2$ 已稳定在 1 → 停止）。
+
+**确定块大小**：
+- $d_1 = r_0 - r_1 = 3 - 2 = 1$（有 1 个大小 ≥1 的块）
+- $d_2 = r_1 - r_2 = 2 - 1 = 1$（有 1 个大小 ≥2 的块）
+- $d_3 = r_2 - r_3 = 1 - 1 = 0$（没有大小 ≥3 的块）
+
+块大小分布：$d_1 - d_2 = 0$（无 $1 \times 1$ 块），$d_2 - d_3 = 1$（有一个 $2 \times 2$ 块）。
+→ 对于 $\lambda = 3$：一个 $2 \times 2$ Jordan 块。
+
+**结论**：
+$$J = \begin{bmatrix} 5 & 0 & 0 \\ 0 & 3 & 1 \\ 0 & 0 & 3 \end{bmatrix}$$
+
+**步骤 4：构造 Jordan 链并求 $P$**
+
+对 $\lambda = 5$：普通特征向量。$(A - 5I)\mathbf{v} = \mathbf{0}$：
+$$\begin{bmatrix} 0 & 4 & 2 \\ 0 & -2 & 1 \\ 0 & 0 & -2 \end{bmatrix} \mathbf{v} = \mathbf{0} \implies \mathbf{v} = [1, 0, 0]^T$$
+故 $\mathbf{p}_1 = [1, 0, 0]^T$。
+
+对 $\lambda = 3$（$2 \times 2$ 块，需要 Jordan 链）：
+- $\mathbf{v}_1$（普通特征向量）：$(A - 3I)\mathbf{v}_1 = \mathbf{0}$。上面 $(A-3I)$ 的 RREF 为 $\begin{bmatrix}1&2&0\\0&0&1\\0&0&0\end{bmatrix}$。解：$x_3 = 0$，$x_1 + 2x_2 = 0$。取 $\mathbf{v}_1 = [2, -1, 0]^T$。$\mathbf{p}_2 = \mathbf{v}_1$。
+- $\mathbf{v}_2$（广义特征向量）：解 $(A - 3I)\mathbf{v}_2 = \mathbf{v}_1$：
+  $$\begin{bmatrix} 2 & 4 & 2 \\ 0 & 0 & 1 \\ 0 & 0 & 0 \end{bmatrix} \begin{bmatrix} x \\ y \\ z \end{bmatrix} = \begin{bmatrix} 2 \\ -1 \\ 0 \end{bmatrix}$$
+  第 2 行：$z = -1$。第 1 行：$2x + 4y + 2(-1) = 2 \implies 2x + 4y = 4 \implies x + 2y = 2$。取 $y = 0, x = 2$。得 $\mathbf{v}_2 = [2, 0, -1]^T$。$\mathbf{p}_3 = \mathbf{v}_2$。
+
+组装：$P = [\mathbf{p}_1 \mid \mathbf{p}_2 \mid \mathbf{p}_3] = \begin{bmatrix} 1 & 2 & 2 \\ 0 & -1 & 0 \\ 0 & 0 & -1 \end{bmatrix}$。
+
+验证：
+$$P^{-1} = \begin{bmatrix} 1 & 2 & 2 \\ 0 & -1 & 0 \\ 0 & 0 & -1 \end{bmatrix}, \quad P^{-1}AP = \begin{bmatrix} 5 & 0 & 0 \\ 0 & 3 & 1 \\ 0 & 0 & 3 \end{bmatrix} = J \quad \checkmark$$
+
+### 5.5 实 Jordan 型（复特征值时的实数形式）
+
+当矩阵有复共轭特征值对 $\lambda = a \pm bi$ 时，标准 Jordan 型包含复数。但在工程和物理中，我们往往希望在实数域内工作。
+
+对共轭对 $a \pm bi$，用一个 $2 \times 2$ **实块**代替对角复数：
+$$C(a, b) = \begin{bmatrix} a & -b \\ b & a \end{bmatrix}$$
+
+实 Jordan 型中，每个 $2 \times 2$ 块 $C(a,b)$ 代替一对复共轭特征值，上对角 $(2 \times 2)$ 块为 $I_2$。
+
+**示例**：$A = \begin{bmatrix} 0 & -1 \\ 1 & 0 \end{bmatrix}$（旋转 $90^\circ$）。特征值 $\lambda = \pm i$。其**复** Jordan 型为 $\begin{bmatrix} i & 0 \\ 0 & -i \end{bmatrix}$，**实** Jordan 型为 $\begin{bmatrix} 0 & -1 \\ 1 & 0 \end{bmatrix} = C(0, 1)$——它自身就是一个实 Jordan 块。
 
 ---
 

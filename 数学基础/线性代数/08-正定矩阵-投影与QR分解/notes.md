@@ -75,7 +75,13 @@ $$\ell_{ii} = \sqrt{a_{ii} - \sum_{k=1}^{i-1} \ell_{ik}^2}$$
 
 $$\ell_{ji} = \frac{1}{\ell_{ii}}\left(a_{ji} - \sum_{k=1}^{i-1} \ell_{jk} \ell_{ik}\right)$$
 
-### 4.2 与 LU 的关系
+### 4.2 Cholesky 与正定的等价性
+
+**方向 $\Leftarrow$（正定 $\implies$ Cholesky 存在）**：正定 $\implies$ 所有前主子式 $>0$ $\implies$ 无需行交换即可做 LDL$^T$（$D$ 对角元全正）$\implies$ 令 $L' = L\sqrt{D}$，得 $A = L' L'^T$ 且 $L'$ 的对角元 $>0$。
+
+**方向 $\Rightarrow$（Cholesky 存在 $\implies$ 正定）**：若 $A = LL^T$ 且 $L$ 可逆（对角元 $>0$），则对任意 $\mathbf{x} \neq \mathbf{0}$：$\mathbf{x}^T A \mathbf{x} = \mathbf{x}^T LL^T \mathbf{x} = \|L^T \mathbf{x}\|^2 > 0$（因为 $L^T$ 可逆保证了 $L^T\mathbf{x} \neq \mathbf{0}$）。故 $A$ 正定。
+
+### 4.3 与 LU 的关系
 
 Cholesky 是 LU 分解的特例（$U = L^T$，$A$ 正定）。计算量为 LU 的一半。
 
@@ -108,6 +114,8 @@ $$\|A\mathbf{x} - \mathbf{b}\|^2 = \|A\mathbf{x} - A\mathbf{\hat{x}} + A\mathbf{
 最优解满足**正规方程**：$A^T A \mathbf{x} = A^T \mathbf{b}$。（推导：残差 $\mathbf{b} - A\mathbf{x} \perp \operatorname{col}(A) \iff A^T(\mathbf{b} - A\mathbf{x}) = \mathbf{0}$。）
 
 解的几何意义：$\mathbf{b}$ 投影到 $\operatorname{col}(A)$ 上 = $A\mathbf{\hat{x}} = P\mathbf{b}$。残差 $\mathbf{b} - A\mathbf{\hat{x}} \perp \operatorname{col}(A)$。
+
+**当 $A$ 列不满秩时**：$(A^T A)^{-1}$ 不存在，正规方程失效。此时需用 **Moore-Penrose 伪逆** $A^+$：$\mathbf{x}^+ = A^+ \mathbf{b}$ 是所有最小范数最小二乘解中范数最小的（见 Ch09 §8）。
 
 ---
 
