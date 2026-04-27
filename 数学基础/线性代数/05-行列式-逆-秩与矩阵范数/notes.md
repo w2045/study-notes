@@ -179,7 +179,7 @@ $$\|A\|_F = \sqrt{\sum_{i=1}^{m}\sum_{j=1}^{n} a_{ij}^2} = \sqrt{\operatorname{t
 
 ### 7.2 算子范数（诱导范数）
 
-> **定义 5（算子范数）**：
+> **定义 4（算子范数）**：
 >
 > $$\|A\|_p = \sup_{\mathbf{x} \neq \mathbf{0}} \frac{\|A\mathbf{x}\|_p}{\|\mathbf{x}\|_p} = \max_{\|\mathbf{x}\|_p = 1} \|A\mathbf{x}\|_p$$
 >
@@ -211,7 +211,7 @@ $$\|A\|_* = \sum_i \sigma_i(A)$$
 
 ## 8. 条件数 (Condition Number)
 
-> **定义 6（条件数）**：可逆方阵 $A$ 的条件数（对 $\ell_2$ 范数）：
+> **定义 5（条件数）**：可逆方阵 $A$ 的条件数（对 $\ell_2$ 范数）：
 >
 > $$\kappa_2(A) = \|A\|_2 \cdot \|A^{-1}\|_2$$
 
