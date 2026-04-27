@@ -43,8 +43,8 @@ Study/
 XX-章节名/
 ├── notes.md
 ├── 理论题/
-│   ├── homework.tex     # 理论题（LaTeX，批改用）
-│   └── solutions.tex    # 理论题答案
+│   ├── homework.md     # 理论题（LaTeX，批改用）
+│   └── solutions.md    # 理论题答案
 └── 编程题/
     ├── homework.md       # 题目描述
     ├── homework.py       # 代码骨架（pass 占位）
@@ -57,8 +57,8 @@ XX-章节名/
 XX-章节名/
 ├── notes.md
 └── 理论题/
-    ├── homework.tex
-    └── solutions.tex
+    ├── homework.md
+    └── solutions.md
 ```
 
 ### 编程类（Python基础 / 数据结构与算法）

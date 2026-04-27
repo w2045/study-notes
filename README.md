@@ -34,8 +34,8 @@ Study/
 XX-章节名/
 ├── notes.md
 ├── 理论题/                    # 数学类有，编程类无
-│   ├── homework.tex
-│   └── solutions.tex          └── 编程题/ 或 作业/
+│   ├── homework.md
+│   └── solutions.md          └── 编程题/ 或 作业/
     ├── homework.md            # 题目描述
     ├── homework.py            # 代码骨架（pass 占位）
     ├── grader.py              # 自动批改
@@ -48,8 +48,8 @@ XX-章节名/
 XX-章节名/
 ├── notes.md
 └── 理论题/
-    ├── homework.tex
-    └── solutions.tex          ```
+    ├── homework.md
+    └── solutions.md          ```
 
 ## 使用方式
 
@@ -67,7 +67,6 @@ code .          # 在 VS Code 中打开
 |----------|---------------|--------------------------|
 | `.md` 预览（侧边） | `Cmd + K V` | `Ctrl + K V` |
 | `.md` 预览（独立标签页） | `Cmd + Shift + V` | `Ctrl + Shift + V` |
-| `.tex` 编译+预览 | `Cmd + S` 保存即编译，`Cmd + Alt + V` 看 PDF | `Ctrl + S` / `Ctrl + Alt + V` |
 
 ### 做编程作业
 
@@ -79,7 +78,7 @@ python3 grader.py    # 自动批改
 
 ### 做理论作业
 
-打开 `理论题/homework.tex`，在 `%%% 在此作答 %%%` 注释区填写答案。保存后 VS Code 自动编译为 PDF 预览。
+打开 `理论题/homework.md`，用 `$$` 数学公式直接在 Markdown 中作答。`Cmd + Shift + V` 实时预览。
 
 ## 当前进度
 
