@@ -14,3 +14,10 @@
 # macOS
 .DS_Store
 __pycache__/
+
+# 用户作业（骨架推上 GitHub，答案本地保留）
+**/编程题/homework.py
+**/编程题/solutions.md
+**/作业/homework.py
+**/作业/solutions.md
+**/理论题/solutions.tex

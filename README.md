@@ -9,33 +9,49 @@ Study/
 ├── README.md                  # 本文件
 ├── CLAUDE.md                  # 项目约定（AI 助手自动加载）
 ├── PROGRESS.md                # 进度追踪
-├── Python基础/                # 13 章，参考 UC Berkeley CS61A
+├── Python基础/                # 12 章，参考 UC Berkeley CS61A
 ├── 数据结构与算法/              # 13 章，参考 Stanford CS106B
-├── 计算机视觉与深度学习/        # 12 章，参考 Stanford CS231N
-├── 强化学习/                   # 10 章
+├── 计算机视觉与深度学习/        # 3 工具前置 + 10 章，参考 Stanford CS231N
+├── 强化学习/                   # 10 章，参考西湖大学《强化学习的数学原理》
 ├── 大语言模型/                 # 10 章
-├── 数学基础/                   # 5 门 33 章
-│   ├── 线性代数/
-│   ├── 微积分/
-│   ├── 概率论/
-│   ├── 凸优化/
-│   └── 信息论/
+├── 数学基础/                   # 5 门 36 章
+│   ├── 线性代数/               # 10 章
+│   ├── 微积分/                 # 6 章
+│   ├── 概率论/                 # 7 章
+│   ├── 凸优化/                 # 8 章
+│   └── 信息论/                 # 5 章
 ├── 基础工具/                   # Markdown、LaTeX、Git、VS Code 等
 └── resources/                 # 论文列表、外部链接
 ```
 
 ## 每章结构
 
+视章节需要，理论题与编程题可同时存在或仅含其一（纯理论章省略编程题）。
+
+### 含编程的章节（数学类 + 编程类）
+
 ```
 XX-章节名/
-├── notes.md          # 参考笔记（直觉 → 定义 → 推导 → 代码 → 例题）
-├── 理论题/            # 数学类特有：LaTeX 理论作业
+├── notes.md
+├── 理论题/                    # 数学类有，编程类无
 │   ├── homework.tex
 │   └── solutions.tex
-└── 编程题/ 或 作业/    # Python 编程 + 自动批改
-    ├── homework.py
-    ├── grader.py
-    └── solutions.md
+└── 编程题/ 或 作业/
+    ├── homework.md            # 题目描述
+    ├── homework_skeleton.py   # 代码骨架（推上 GitHub）
+    ├── homework.py            # 用户填写（.gitignore 忽略）
+    ├── grader.py              # 自动批改
+    └── solutions.md           # 参考答案（.gitignore 忽略）
+```
+
+### 纯理论章节（如行列式、Jordan、矩阵微积分）
+
+```
+XX-章节名/
+├── notes.md
+└── 理论题/
+    ├── homework.tex
+    └── solutions.tex
 ```
 
 ## 使用方式
@@ -60,9 +76,12 @@ code .          # 在 VS Code 中打开
 
 ```bash
 cd Python基础/01-表达式与函数/作业
+cp homework_skeleton.py homework.py   # 复制骨架文件
 # 编辑 homework.py，填写函数体
 python3 grader.py    # 自动批改
 ```
+
+> 注意：`homework.py` 和 `solutions.md` 被 `.gitignore` 忽略，不会推上 GitHub——这样你的答案只在本地，不会影响仓库的其他人。
 
 ### 做理论作业
 
@@ -73,8 +92,8 @@ python3 grader.py    # 自动批改
 | 学科 | 进度 |
 |------|------|
 | Python基础 | 12/12 |
-| 线性代数 | 1/7 |
-| 基础工具 | 1/6 |
+| 线性代数 | 0/10（重构中） |
+| 基础工具 | 6/6 |
 | 其余 | 待开始 |
 
 详见 [`PROGRESS.md`](PROGRESS.md)。
@@ -94,4 +113,5 @@ python3 grader.py    # 自动批改
 - CS61A: UC Berkeley, John DeNero
 - CS106B: Stanford, 参考课件 `~/Desktop/CS106B_Slides/`
 - CS231N: Stanford, Fei-Fei Li et al.
+- 强化学习: 西湖大学 赵世钰《强化学习的数学原理》
 - 凸优化课件: `~/Desktop/Convex Optimization/`

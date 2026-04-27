@@ -36,19 +36,30 @@ Study/
 ## 每章结构（按学科类型：子目录分类存放）
 
 ### 数学类（线性代数 / 微积分 / 概率论 / 凸优化 / 信息论）
-理论与编程双重练习：
+视章节需要，理论题与编程题可同时存在，也可仅含其一：
 
+含编程的章节：
 ```
 XX-章节名/
 ├── notes.md
 ├── 理论题/
-│   ├── homework.tex     # 理论题（LaTeX，我读取批改）
-│   └── solutions.tex    # 理论题答案
+│   ├── homework.tex     # 理论题（LaTeX，批改用）
+│   └── solutions.tex    # 理论题答案（.gitignore 忽略）
 └── 编程题/
-    ├── homework.md       # 题目描述（≥10 题）
-    ├── homework.py       # 代码骨架
-    ├── grader.py         # 自动批改
-    └── solutions.md       # 编程题答案（<details> 折叠）
+    ├── homework.md       # 题目描述
+    ├── homework_skeleton.py  # 骨架（推上 GitHub）
+    ├── homework.py           # 用户填写（.gitignore 忽略）
+    ├── grader.py             # 自动批改
+    └── solutions.md          # 参考答案（.gitignore 忽略）
+```
+
+纯理论章节（如行列式、Jordan、矩阵微积分）：
+```
+XX-章节名/
+├── notes.md
+└── 理论题/
+    ├── homework.tex
+    └── solutions.tex
 ```
 
 ### 编程类（Python基础 / 数据结构与算法）
@@ -85,10 +96,13 @@ XX-章节名/
 - 题型混合：代码补全、实现函数、找 bug、doctest、综合题
 - 每题给出公开测试用例
 
-### homework.py 规范
+### homework_skeleton.py 规范（推上 GitHub）
 - 函数签名 + docstring（含 doctest）
 - 函数体用 `pass` 占位
-- 顶部注明运行方式：`python3 grader.py`
+- 顶部注明运行方式：`cp homework_skeleton.py homework.py && python3 grader.py`
+
+### homework.py（用户本地，.gitignore 忽略）
+- 从 `homework_skeleton.py` 复制后填写实现
 
 ### grader.py 规范
 - `import importlib` 动态导入 `homework.py`
@@ -96,9 +110,13 @@ XX-章节名/
 - 浮点数比较用 `math.isclose`
 - 输出每道题的 ✅/❌ + 错误详情 + 总分
 
-### solutions.md 规范
+### solutions.md 规范（.gitignore 忽略）
 - 所有答案用 `<details><summary>` 折叠
 - 每题附「要点」解释关键思路和常见错误
+
+### 答案文件约定
+- `homework.py`, `solutions.md`, `solutions.tex` 由 `.gitignore` 忽略，不推上 GitHub
+- 新用户 clone 后自行 `cp homework_skeleton.py homework.py` 开始
 
 ---
 
@@ -106,6 +124,7 @@ XX-章节名/
 - 凸优化课件：`~/Desktop/Convex Optimization/`（16 讲 PDF）
 - CS106B 课件：`~/Desktop/CS106B_Slides/`（14 讲 PDF + Stanford Reader）
 - Python 基础作业：`~/Desktop/Code/CS61A-Assignments/`（已完成，用作参考）
+- 强化学习：西湖大学 赵世钰《强化学习的数学原理》([MathFoundationRL](https://github.com/MathFoundationRL))
 
 ---
 
@@ -128,14 +147,17 @@ XX-章节名/
 
 ## 数学篇章大纲（33 章）
 
-### 线性代数
-01 — 向量、线性组合、向量空间
-02 — 矩阵与线性变换
-03 — 线性方程组与消元法
-04 — 行列式、逆、秩
-05 — 特征值与特征向量
-06 — 奇异值分解 (SVD)
-07 — 矩阵微积分
+### 线性代数（10 章）
+01 — 向量与向量空间
+02 — 内积空间、范数与正交性
+03 — 矩阵与线性变换
+04 — 线性方程组与消元法
+05 — 行列式、逆、秩与矩阵范数
+06 — 特征值与特征向量
+07 — 对角化、谱分解与 Jordan 标准形
+08 — 正定矩阵、投影与 QR 分解
+09 — 奇异值分解 (SVD)
+10 — 矩阵微积分
 
 ### 微积分
 01 — 极限、导数与微分
@@ -170,3 +192,38 @@ XX-章节名/
 03 — 互信息
 04 — 信源编码
 05 — 信道容量
+
+---
+
+## 强化学习 大纲（10 章）
+
+参考：西湖大学 赵世钰《强化学习的数学原理》
+
+01 — 基本概念：MDP 框架
+02 — 贝尔曼公式
+03 — 贝尔曼最优公式
+04 — 值迭代与策略迭代
+05 — 蒙特卡洛方法
+06 — 随机近似与随机梯度下降
+07 — 时序差分方法 (TD/SARSA/Q-Learning)
+08 — 值函数近似 (DQN)
+09 — 策略梯度方法 (REINFORCE)
+10 — Actor-Critic 方法
+
+---
+
+## 计算机视觉与深度学习 大纲（10 章 + 3 工具前置）
+
+参考：Stanford CS231N
+
+前置工具：00A-NumPy基础, 00B-PyTorch基础, 00C-训练流程实战
+01 — 图像分类与数据驱动方法
+02 — 反向传播与计算图
+03 — 卷积神经网络 (CNN)
+04 — CNN 架构演进 (AlexNet → ResNet → EfficientNet)
+05 — 训练技巧 (BN/Dropout/数据增强/迁移学习)
+06 — 目标检测
+07 — 图像分割
+08 — 生成模型 (VAE/GAN/扩散模型)
+09 — 自监督学习与对比学习
+10 — Vision Transformer
