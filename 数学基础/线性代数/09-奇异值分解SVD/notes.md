@@ -75,6 +75,15 @@ $$A = U_r \Sigma_r V_r^T$$
 - **PCA**：SVD 就是 PCA 的算法核心（中心化数据矩阵的 SVD）
 - **推荐系统**：SVD 用于矩阵补全
 
+**证明思路**（Eckart-Young，谱范数情形）：
+
+要证：对任意秩-$\leq k$ 的矩阵 $B$，$\|A - B\|_2 \geq \sigma_{k+1}$，且 $B = A_k$ 取等号。
+
+1. 考虑 $V$ 的后 $k+1$ 个右奇异向量张成的子空间 $W = \operatorname{span}\{\mathbf{v}_1, \ldots, \mathbf{v}_{k+1}\}$（维数 $k+1$）。
+2. 对任意秩-$\leq k$ 的 $B$，$\ker(B)$ 维数 $\geq n - k$。由维数公式，$W \cap \ker(B) \neq \{\mathbf{0}\}$——存在单位向量 $\mathbf{w} \in W$ 使得 $B\mathbf{w} = \mathbf{0}$。
+3. 写出 $\mathbf{w} = \sum_{i=1}^{k+1} c_i \mathbf{v}_i$，则 $\|(A - B)\mathbf{w}\| = \|A\mathbf{w}\| = \|\sum_{i=1}^{k+1} c_i \sigma_i \mathbf{u}_i\| \geq \sigma_{k+1}\|\sum c_i \mathbf{u}_i\| = \sigma_{k+1}$（因为 $\sigma_1 \geq \cdots \geq \sigma_{k+1}$ 且 $\mathbf{u}_i$ 正交）。
+4. 故 $\|A - B\|_2 \geq \sigma_{k+1}$。而 $A_k$ 能达到此下界。证毕
+
 ---
 
 ## 5. SVD 与 $A^T A$ 和 $AA^T$ 的关系
@@ -118,46 +127,31 @@ $$\text{能量保留} = \frac{\sum_{i=1}^{k} \sigma_i^2}{\sum_{i=1}^{r} \sigma_i
 
 ---
 
-## 8. 代码实现
+## 8. 概念演示：SVD 低秩近似的压缩效果
+
+> 本章的编程练习在 `编程题/` 目录下。运行 `python3 grader.py` 自动批改。
 
 ```python
-from typing import List, Tuple
-import math
+import numpy as np
 
+# 100x100 的低秩矩阵（秩=3）
+U, _ = np.linalg.qr(np.random.randn(100, 3))
+V, _ = np.linalg.qr(np.random.randn(100, 3))
+A = U @ np.diag([100, 50, 10]) @ V.T
 
-def svd_power_iteration(A: List[List[float]], k: int = 1) -> Tuple:
-    """用幂迭代法计算前 k 大奇异值及向量（简化版）。"""
-    m, n = len(A), len(A[0])
-    # 此处为概念示意，完整实现用 numpy
-    # 实际应用中用 numpy.linalg.svd
-    pass
+# 秩-1 近似
+u, s, vt = np.linalg.svd(A, full_matrices=False)
+A1 = s[0] * np.outer(u[:, 0], vt[0, :])
 
+# 能量保留：σ1² / (σ1² + σ2² + σ3²)
+energy_ratio = s[0]**2 / np.sum(s**2)
+error = np.linalg.norm(A - A1)  # Frobenius
 
-def low_rank_approx(
-    U: List[List[float]], S: List[float], Vt: List[List[float]], k: int
-) -> List[List[float]]:
-    """从 SVD 重建秩-k 近似矩阵 A_k = sum_{i=1}^k sigma_i u_i v_i^T。"""
-    m, n = len(U), len(Vt[0])
-    result = [[0.0] * n for _ in range(m)]
-    for idx in range(k):
-        sigma = S[idx]
-        u_col = [U[i][idx] for i in range(m)]
-        v_row = Vt[idx]
-        for i in range(m):
-            for j in range(n):
-                result[i][j] += sigma * u_col[i] * v_row[j]
-    return result
-
-
-def svd_error(A: List[List[float]], Ak: List[List[float]]) -> float:
-    """计算 Frobenius 误差 ||A - A_k||_F。"""
-    total = 0.0
-    for i in range(len(A)):
-        for j in range(len(A[0])):
-            diff = A[i][j] - Ak[i][j]
-            total += diff * diff
-    return math.sqrt(total)
+print(f"秩-1 能量保留: {energy_ratio:.1%}")  # ≈ 80%
+print(f"误差 σ2: {error:.1f} vs σ2: {s[1]:.1f}")  # 误差 ≈ σ2 — Eckart-Young!
 ```
+
+**要点**：`np.linalg.svd` 是数值计算 SVD 的标准工具。误差 $\|A - A_k\|_F = \sqrt{\sum_{i=k+1}^r \sigma_i^2}$，被截断的奇异值直接决定了信息损失。
 
 ---
 
@@ -200,6 +194,19 @@ $$M = \begin{bmatrix} 1 & 2 & 1 \\ 2 & 4 & 2 \\ 1 & 2 & 1 \\ 3 & 6 & 3 \end{bmat
 秩-1 近似 = 原矩阵本身（因为秩确实是 1）。这解释了为什么有些图像有极高压缩比。
 
 </details>
+
+---
+
+## 10. 常见误区
+
+| 误区 | 正确理解 |
+|------|----------|
+| 「SVD = 特征分解推广到非方阵」 | 不对。SVD 对**任意矩阵**存在，特征分解只对方阵存在。且 SVD 的 $U, V$ 是正交矩阵，不是特征向量矩阵 |
+| 「奇异值 = 特征值」 | 仅对称半正定矩阵成立（此时 $\sigma_i = \lambda_i$）。一般矩阵的奇异值 ≠ 特征值 |
+| 「奇异值就是 $A^T A$ 的特征值」 | 是 $A^T A$ 特征值的**平方根**：$\sigma_i = \sqrt{\lambda_i(A^T A)}$ |
+| 「SVD 可以随便排序」 | 约定按 $\sigma_1 \geq \sigma_2 \geq \cdots \geq \sigma_r > 0$ 排序。重排会破坏 $U, V$ 的对应关系 |
+| 「紧 SVD 的 $U_r$ 是方阵」 | 紧 SVD 中 $U_r \in \mathbb{R}^{m \times r}$，只有当 $m = r$ 时才是方阵 |
+| 「低秩近似 = 随便删几个奇异值」 | Eckart-Young 定理保证截断 SVD 是**所有**同秩矩阵中的最优近似——这是 SVD 独有的性质 |
 
 ---
 

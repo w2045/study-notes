@@ -200,6 +200,30 @@ $$A = \underbrace{\frac{A + A^T}{2}}_{\text{对称}} + \underbrace{\frac{A - A^T
 - $(Q\mathbf{x}) \cdot (Q\mathbf{y}) = \mathbf{x} \cdot \mathbf{y}$（保角）
 - $|\det Q| = 1$
 
+### 5.8 酉矩阵、Hermitian 与正规矩阵（复数域推广）
+
+当矩阵元素取复数时，转置 $A^T$ 需替换为**共轭转置** $A^* = \overline{A}^T$（见 Ch02 §3.1）。
+
+> **定义 13（Hermitian 矩阵）**：复方阵 $A$ 满足 $A^* = A$，即 $a_{ij} = \overline{a_{ji}}$。
+
+Hermitian 矩阵是实对称矩阵在复数域的直接推广。对角线元素必为实数（因为 $a_{ii} = \overline{a_{ii}}$）。
+
+> **定义 14（酉矩阵）**：复方阵 $U$ 满足 $U^* U = U U^* = I$，即 $U^{-1} = U^*$。
+
+酉矩阵是实正交矩阵的复数推广，保持 Hermitian 内积不变。**DFT 矩阵** $F_{kj} = \frac{1}{\sqrt{n}} e^{-2\pi i kj / n}$ 是最重要的酉矩阵之一。
+
+> **定义 15（正规矩阵）**：方阵 $A$ 满足 $A^* A = A A^*$。
+
+正规矩阵是「可酉对角化」的充要条件（见 Ch07）。重要子族：
+| 矩阵族 | 条件 | 特征值 |
+|--------|------|--------|
+| Hermitian | $A^* = A$ | 全为实数 |
+| 酉矩阵 | $U^* = U^{-1}$ | 全在单位圆上 ($|\lambda|=1$) |
+| 实对称 | $A^T = A$ | 全为实数，可正交对角化 |
+| 实正交 | $Q^T = Q^{-1}$ | 在单位圆上 |
+
+> **记忆**：Hermitian $\subset$ 正规矩阵，酉矩阵 $\subset$ 正规矩阵。正规矩阵 = 可酉对角化。
+
 ---
 
 ## 6. Kronecker 积
@@ -220,6 +244,10 @@ $$A = \underbrace{\frac{A + A^T}{2}}_{\text{对称}} + \underbrace{\frac{A - A^T
 - $(A \otimes B)^T = A^T \otimes B^T$
 - $(A \otimes B)^{-1} = A^{-1} \otimes B^{-1}$（若可逆）
 
+**具体例子**：$A = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}$, $B = I_2$，则：
+$$A \otimes B = \begin{bmatrix} 1\cdot I_2 & 2\cdot I_2 \\ 3\cdot I_2 & 4\cdot I_2 \end{bmatrix} = \begin{bmatrix} 1 & 0 & 2 & 0 \\ 0 & 1 & 0 & 2 \\ 3 & 0 & 4 & 0 \\ 0 & 3 & 0 & 4 \end{bmatrix}$$
+这在求解 **Sylvester 方程** $AX + XB = C$ 时出现——向量化后 $(I \otimes A + B^T \otimes I)\operatorname{vec}(X) = \operatorname{vec}(C)$。
+
 ---
 
 ## 7. 矩阵的内积与范数
@@ -228,17 +256,19 @@ $$A = \underbrace{\frac{A + A^T}{2}}_{\text{对称}} + \underbrace{\frac{A - A^T
 
 $$\langle A, B \rangle_F = \operatorname{tr}(A^T B) = \sum_{i=1}^{m} \sum_{j=1}^{n} a_{ij} b_{ij}$$
 
-这等价于将矩阵「拉直」为 $mn$ 维向量后的标准内积。
+这等价于将矩阵「拉直」为 $mn$ 维向量后的标准内积。对复矩阵，Frobenius 内积为 $\langle A, B \rangle_F = \operatorname{tr}(A^* B)$。
 
-### 7.2 Frobenius 范数
+### 7.2 Frobenius 范数（主定义位置）
 
-$$\|A\|_F = \sqrt{\langle A, A \rangle_F} = \sqrt{\sum_{i,j} a_{ij}^2}$$
+$$\|A\|_F = \sqrt{\langle A, A \rangle_F} = \sqrt{\sum_{i,j} a_{ij}^2} = \sqrt{\operatorname{tr}(A^T A)}$$
 
-这是把矩阵所有元素平方和的平方根——最简单的矩阵范数。
+这是矩阵所有元素平方和的平方根——最简单的矩阵范数。等价表达式 $\|A\|_F = \sqrt{\sum \sigma_i^2}$ 见 Ch09（SVD）。
 
-### 7.3 迹 (Trace)
+> 后续章节（Ch05 §7.1, Ch09 §6）将给出 Frobenius 范数的等价定义，均指同一概念。
 
-> **定义 14（迹）**：方阵 $A$ 的**迹**是主对角线元素之和：
+### 7.3 迹 (Trace)（主定义位置）
+
+> **定义 15（迹）**：方阵 $A$ 的**迹**是主对角线元素之和：
 >
 > $$\operatorname{tr}(A) = \sum_{i=1}^{n} a_{ii}$$
 
@@ -246,7 +276,10 @@ $$\|A\|_F = \sqrt{\langle A, A \rangle_F} = \sqrt{\sum_{i,j} a_{ij}^2}$$
 - $\operatorname{tr}(A + B) = \operatorname{tr}(A) + \operatorname{tr}(B)$
 - $\operatorname{tr}(cA) = c\operatorname{tr}(A)$
 - $\operatorname{tr}(AB) = \operatorname{tr}(BA)$（循环性质！即使 $AB \neq BA$）
-- $\operatorname{tr}(A) = \sum \lambda_i$（特征值之和，见第 06 章）
+- $\operatorname{tr}(P^{-1}AP) = \operatorname{tr}(A)$（相似不变性）
+- $\operatorname{tr}(A) = \sum \lambda_i$（特征值之和，见 Ch06）
+
+> Ch05 §6 将回顾迹的性质，此处为主定义。
 
 ---
 
@@ -274,120 +307,32 @@ $$\|A\|_F = \sqrt{\langle A, A \rangle_F} = \sqrt{\sum_{i,j} a_{ij}^2}$$
 
 ---
 
-## 9. 代码实现
+## 9. 概念演示：变换的复合
+
+> 本章的编程练习在 `编程题/` 目录下。运行 `python3 grader.py` 自动批改。
 
 ```python
-from __future__ import annotations
-from typing import List
+import numpy as np
 
+# 旋转 90° + 水平拉伸 = 先拉伸再旋转
+rotate = np.array([[0, -1],
+                   [1,  0]])
+stretch = np.array([[2, 0],
+                    [0, 1]])
 
-class Matrix:
-    """m × n 实矩阵。数据存为行主序的 list[list[float]]。"""
+# 复合变换 = 矩阵乘法（注意顺序！先拉伸后旋转 = rotate @ stretch）
+composite = rotate @ stretch  # [[0, -1], [2, 0]]
 
-    def __init__(self, data: List[List[float]]):
-        if not data or not data[0]:
-            raise ValueError("矩阵不能为空")
-        self._data = [list(row) for row in data]
-        self._rows = len(data)
-        self._cols = len(data[0])
-        for row in data:
-            if len(row) != self._cols:
-                raise ValueError("所有行必须等长")
-
-    @property
-    def shape(self) -> tuple:
-        return (self._rows, self._cols)
-
-    def __repr__(self) -> str:
-        return f"Matrix({self._data})"
-
-    def __getitem__(self, ij: tuple) -> float:
-        i, j = ij
-        return self._data[i][j]
-
-    # ─── 加法 ───
-    def __add__(self, other: Matrix) -> Matrix:
-        if self.shape != other.shape:
-            raise ValueError("形状不匹配")
-        return Matrix([[self[i, j] + other[i, j] for j in range(self._cols)]
-                        for i in range(self._rows)])
-
-    # ─── 标量乘法 ───
-    def __mul__(self, scalar: float) -> Matrix:
-        return Matrix([[self[i, j] * scalar for j in range(self._cols)]
-                        for i in range(self._rows)])
-
-    def __rmul__(self, scalar: float) -> Matrix:
-        return self.__mul__(scalar)
-
-    # ─── 矩阵乘法 ───
-    def __matmul__(self, other: Matrix) -> Matrix:
-        """A @ B: 矩阵乘法。"""
-        if self._cols != other._rows:
-            raise ValueError(f"形状不匹配: {self.shape} @ {other.shape}")
-        result = [[0.0] * other._cols for _ in range(self._rows)]
-        for i in range(self._rows):
-            for k in range(self._cols):
-                aik = self._data[i][k]
-                if aik == 0:
-                    continue
-                row_b = other._data[k]
-                for j in range(other._cols):
-                    result[i][j] += aik * row_b[j]
-        return Matrix(result)
-
-    # ─── 转置 ───
-    def transpose(self) -> Matrix:
-        return Matrix([[self._data[i][j] for i in range(self._rows)]
-                        for j in range(self._cols)])
-
-    @property
-    def T(self) -> Matrix:
-        return self.transpose()
-
-    # ─── 常用生成方法 ───
-    @staticmethod
-    def zeros(rows: int, cols: int) -> Matrix:
-        return Matrix([[0.0] * cols for _ in range(rows)])
-
-    @staticmethod
-    def identity(n: int) -> Matrix:
-        m = Matrix.zeros(n, n)
-        for i in range(n):
-            m._data[i][i] = 1.0
-        return m
-
-    @staticmethod
-    def diag(values: List[float]) -> Matrix:
-        n = len(values)
-        m = Matrix.zeros(n, n)
-        for i, v in enumerate(values):
-            m._data[i][i] = v
-        return m
-
-    # ─── 迹 ───
-    def trace(self) -> float:
-        if self._rows != self._cols:
-            raise ValueError("迹仅定义于方阵")
-        return sum(self._data[i][i] for i in range(self._rows))
-
-    # ─── 转为列表 ───
-    def to_list(self) -> List[List[float]]:
-        return [list(row) for row in self._data]
-
-
-def mat_vec_mul(A: Matrix, x: List[float]) -> List[float]:
-    """矩阵-向量乘法: b = A*x。"""
-    return [sum(A[i, j] * x[j] for j in range(A.shape[1]))
-            for i in range(A.shape[0])]
-
-
-def frobenius_norm(A: Matrix) -> float:
-    """Frobenius 范数。"""
-    import math
-    return math.sqrt(sum(A[i, j] ** 2 for i in range(A.shape[0])
-                          for j in range(A.shape[1])))
+# 单位正方形顶点
+square = np.array([[0, 1, 1, 0],
+                   [0, 0, 1, 1]])
+transformed = composite @ square
+print(transformed)
+# [[ 0 -1 -1  0]
+#  [ 0  2  2  0]]  → 平行四边形
 ```
+
+**要点**：$AB$ 的几何意义是「先应用 $B$ 变换，再应用 $A$ 变换」。矩阵乘法不交换的根本原因：变换的顺序不可随意调换。
 
 ---
 

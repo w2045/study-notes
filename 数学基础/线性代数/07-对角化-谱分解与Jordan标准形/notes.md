@@ -32,6 +32,11 @@
 2. 不同特征值的特征向量自动正交
 3. $A$ 可被**正交**对角化（$Q^{-1} = Q^T$，更简洁！）
 
+**证明思路**（关键步骤）：
+1. **特征值实数**：设 $A\mathbf{v} = \lambda\mathbf{v}$，则 $\lambda\|\mathbf{v}\|^2 = \mathbf{v}^T A \mathbf{v} = (A\mathbf{v})^T \mathbf{v} = \overline{\lambda}\|\mathbf{v}\|^2$（利用 $A=A^T$ 和实向量 $\overline{\mathbf{v}} = \mathbf{v}$），得 $\lambda = \overline{\lambda} \in \mathbb{R}$。
+2. **特征向量正交**：若 $\lambda_1 \neq \lambda_2$，则 $\lambda_1\mathbf{v}_1^T\mathbf{v}_2 = \mathbf{v}_1^T A\mathbf{v}_2 = \lambda_2\mathbf{v}_1^T\mathbf{v}_2$，故 $(\lambda_1 - \lambda_2)\mathbf{v}_1^T\mathbf{v}_2 = 0 \implies \mathbf{v}_1 \perp \mathbf{v}_2$。
+3. **正交对角化**：通过对维数做归纳法。取 $A$ 的任一单位特征向量 $\mathbf{q}_1$，扩充为标准正交基，写出 $A$ 在该基下的分块矩阵，由对称性得右下块仍对称，用归纳假设即可。证毕
+
 **几何意义**：实对称矩阵 = 在**正交**方向上独立缩放的变换。相当于先把空间旋转到特征方向（$Q^T$），在各方向缩放（$\Lambda$），再旋转回来（$Q$）。
 
 ### 2.2 一般方阵的 Schur 分解
@@ -43,6 +48,19 @@
 > $T$ 的对角线元素是 $A$ 的特征值。
 
 Schur 分解是谱定理的推广——任意方阵都可以酉三角化（但不一定能对角化）。
+
+**正规矩阵与酉对角化**：Schur 分解中 $T$ 何时是对角阵？答案是：当且仅当 $A$ 是**正规矩阵**（$A^*A = AA^*$）。
+
+> **定理 3（正规矩阵的谱定理）**：$A$ 可酉对角化（$A = U\Lambda U^*$）$\iff$ $A$ 是正规矩阵。
+
+正规矩阵族包括：
+| 子族 | 条件 | 特征值位置 |
+|------|------|-----------|
+| Hermitian | $A^* = A$ | 实数轴 |
+| 斜 Hermitian | $A^* = -A$ | 虚数轴 |
+| 酉矩阵 | $U^* = U^{-1}$ | 单位圆 |
+
+**与实矩阵的对应**：实正规 + 实特征值 → 实正交对角化（即实对称矩阵的谱定理）。但如果一个实正规矩阵有复特征值（如旋转矩阵），它不能实对角化——但可以酉对角化。
 
 ---
 
@@ -160,7 +178,25 @@ $$e^{J_k(\lambda)t} = e^{\lambda t} \begin{bmatrix} 1 & t & \frac{t^2}{2} & \cdo
 
 ## 8. 例题
 
-### 例 1：谱分解
+### 例 1：Jordan 标准形（3×3）
+
+求 $A = \begin{bmatrix} 2 & 1 & 0 \\ 0 & 2 & 1 \\ 0 & 0 & 2 \end{bmatrix}$ 的 Jordan 标准形。
+
+<details><summary>解</summary>
+
+特征值 $\lambda = 2$（代数重数 3）。$(A - 2I) = \begin{bmatrix} 0 & 1 & 0 \\ 0 & 0 & 1 \\ 0 & 0 & 0 \end{bmatrix}$，秩 = 2，故 $\dim\ker(A-2I) = 3-2 = 1$——只有一个特征向量（几何重数 1）。
+
+Jordan 链：$\mathbf{v}_1 = [1, 0, 0]^T$ 满足 $(A-2I)\mathbf{v}_1 = \mathbf{0}$。
+$(A-2I)\mathbf{v}_2 = \mathbf{v}_1 \implies \mathbf{v}_2 = [0, 1, 0]^T$
+$(A-2I)\mathbf{v}_3 = \mathbf{v}_2 \implies \mathbf{v}_3 = [0, 0, 1]^T$
+
+因为几何重数 = 1，只有一个 Jordan 块：$J_3(2) = \begin{bmatrix} 2 & 1 & 0 \\ 0 & 2 & 1 \\ 0 & 0 & 2 \end{bmatrix}$。事实上 $A$ 自身已为 Jordan 块。
+
+若 $\dim\ker(A-2I) = 2$（如 $A = \begin{bmatrix} 2 & 1 & 0 \\ 0 & 2 & 0 \\ 0 & 0 & 2 \end{bmatrix}$），则有两个 Jordan 块：$J_2(2) \oplus J_1(2)$。块的个数 = 几何重数，每块大小由 Jordan 链长度决定。
+
+</details>
+
+### 例 2：谱分解
 
 对 $A = \begin{bmatrix} 2 & 1 \\ 1 & 2 \end{bmatrix}$，写出谱分解 $A = \lambda_1 P_1 + \lambda_2 P_2$。
 
@@ -180,7 +216,7 @@ $P_1 + P_2 = I$, $P_1 P_2 = 0$ ✓
 
 </details>
 
-### 例 2：Jordan 型
+### 例 3：Jordan 型（2×2 幂零）
 
 求 $A = \begin{bmatrix} 0 & 1 \\ 0 & 0 \end{bmatrix}$ 的 Jordan 标准形。
 
@@ -196,18 +232,33 @@ Jordan 块 $J_2(0) = \begin{bmatrix}0&1\\0&0\end{bmatrix}$，$A$ 自身已在 Jo
 
 ---
 
+## 9. 常见误区
+
+| 误区 | 正确理解 |
+|------|----------|
+| 「实对称 = 唯一可对角化的矩阵」 | 大量非对称矩阵也可对角化（充要条件：几何重数 = 代数重数）。实对称的特殊之处在于**正交**对角化 |
+| 「可对角化 = 可正交对角化」 | 正交对角化需要更强的条件（正规矩阵 + 实特征值） |
+| 「Jordan 标准形只在复数域存在」 | 若所有特征值都是实数（如实矩阵的实特征值），Jordan 型完全在实数域内 |
+| 「正规矩阵就是对称矩阵」 | 正规矩阵 $(A^*A = AA^*)$ 范围大得多——酉矩阵、斜 Hermitian 矩阵都是正规的 |
+| 「谱分解就是特征分解」 | 谱分解是特征分解的投影形式 $A = \sum \lambda_i P_i$，强调投影算子的角色 |
+| 「广义特征向量是随便选的」 | 必须满足 Jordan 链条件 $(A-\lambda I)\mathbf{v}_{k} = \mathbf{v}_{k-1}$，构成特定结构 |
+
+---
+
 ## 本章核心概念速查
 
 | 概念 | 定义 | 一句话 |
 |------|------|--------|
-| 谱定理 | $A = Q\Lambda Q^T$ | 实对称矩阵的正交对角化 |
-| Schur 分解 | $A = U T U^*$ | 任意方阵的酉三角化 |
+| 谱定理 | $A = Q\Lambda Q^T$ | 实对称 → 正交对角化 |
+| Hermitian 对角化 | $A = U\Lambda U^*$ | Hermitian → 酉对角化（特征值全实） |
+| Schur 分解 | $A = U T U^*$ | 任意方阵 → 酉三角化 |
+| 正规矩阵 | $A^*A = AA^*$ | 可酉对角化的充要条件 |
 | 谱分解 | $A = \sum \lambda_i P_i$ | 矩阵 = 加权投影之和 |
 | Rayleigh 商 | $\mathbf{x}^T A\mathbf{x} / \mathbf{x}^T\mathbf{x}$ | 从向量估计特征值 |
 | Jordan 块 | 对角 $\lambda$ + 上对角 1 | 不可对角化的「基本单元」 |
 | Jordan 标准形 | $A = P J P^{-1}$ | 最接近对角化的形式 |
 | 广义特征向量 | $(A - \lambda I)^k\mathbf{v} = \mathbf{0}$ | Jordan 链的元素 |
-| 正规矩阵 | $A^*A = AA^*$ | 可酉对角化的矩阵族 |
+| 酉矩阵 | $U^* U = I$ | 复正交矩阵；保 Hermitian 内积 |
 
 ---
 

@@ -32,6 +32,7 @@
 | $\mathbf{a}^T \mathbf{x}$ | $\mathbf{a}$ |
 | $\mathbf{x}^T \mathbf{x} = \|\mathbf{x}\|^2$ | $2\mathbf{x}$ |
 | $\mathbf{x}^T A \mathbf{x}$（$A$ 对称） | $2A\mathbf{x}$ |
+| $\mathbf{x}^T A \mathbf{x}$（$A$ 一般） | $(A + A^T)\mathbf{x}$ |
 | $\|A\mathbf{x} - \mathbf{b}\|^2$ | $2A^T(A\mathbf{x} - \mathbf{b})$ |
 | $\log(\mathbf{a}^T \mathbf{x})$ | $\mathbf{a} / (\mathbf{a}^T \mathbf{x})$ |
 
@@ -82,6 +83,7 @@ $H$ 是对称矩阵（若 $f$ 的二阶混合偏导连续）。
 |-----------------|-------------|
 | $\mathbf{x}^T \mathbf{x}$ | $2I$ |
 | $\mathbf{x}^T A \mathbf{x}$（$A$ 对称） | $2A$ |
+| $\mathbf{x}^T A \mathbf{x}$（$A$ 一般） | $A + A^T$ |
 | $\|A\mathbf{x} - \mathbf{b}\|^2$ | $2A^T A$ |
 | $-\log(\mathbf{a}^T \mathbf{x})$ | $\frac{\mathbf{a}\mathbf{a}^T}{(\mathbf{a}^T \mathbf{x})^2}$ |
 
@@ -107,14 +109,25 @@ $H$ 是对称矩阵（若 $f$ 的二阶混合偏导连续）。
 | $\log \det X$ | $X^{-T}$ | 行列式对数 |
 | $\|AX - B\|_F^2$ | $2A^T(AX - B)$ | 最小二乘 |
 
-**推导方法**（迹技巧）：
-- $\operatorname{tr}(AB) = \operatorname{tr}(BA)$
-- $d(\operatorname{tr} X) = \operatorname{tr}(dX)$
-- 从 $df = \operatorname{tr}(G^T dX)$ 得 $\nabla_X f = G$
+**推导方法—迹技巧 (trace trick)**：
 
-**例**：$f(X) = \operatorname{tr}(X^T A X)$。
-$df = \operatorname{tr}(dX^T A X + X^T A dX) = \operatorname{tr}(X^T A^T dX + X^T A dX) = \operatorname{tr}((A^T X + A X)^T dX)$。
-所以 $\nabla_X f = (A + A^T) X$。
+矩阵求导的核心工具链：
+1. **迹的循环不变性**：$\operatorname{tr}(AB) = \operatorname{tr}(BA)$（即使 $AB \neq BA$）
+2. **微分的迹形式**：$d(\operatorname{tr} X) = \operatorname{tr}(dX)$
+3. **提取梯度**：将全微分整理为 $df = \operatorname{tr}(G^T dX)$ 形式，则 $\nabla_X f = G$
+
+**例 1**：$f(X) = \operatorname{tr}(X^T A X)$。
+$$\begin{aligned} df &= \operatorname{tr}(dX^T A X + X^T A dX) \\ &= \operatorname{tr}(X^T A^T dX + X^T A dX) \quad (\text{因 } \operatorname{tr}(dX^T A X) = \operatorname{tr}(X^T A^T dX)) \\ &= \operatorname{tr}((A^T X + A X)^T dX) \end{aligned}$$
+所以 $\nabla_X f = (A + A^T) X$。（若 $A$ 对称，则为 $2AX$。）
+
+**例 2**：$f(X) = \|AX - B\|_F^2$（最小二乘的矩阵形式）。
+$$\begin{aligned} f &= \operatorname{tr}((AX - B)^T(AX - B)) \\ df &= \operatorname{tr}((A dX)^T(AX - B) + (AX - B)^T A dX) \\ &= 2\operatorname{tr}((AX - B)^T A dX) = \operatorname{tr}((2A^T(AX - B))^T dX) \end{aligned}$$
+所以 $\nabla_X f = 2A^T(AX - B)$。
+
+**例 3**：$f(X) = \log \det X$（$X$ 正定）。
+利用 Jacobi 公式 $d(\det X) = \det X \cdot \operatorname{tr}(X^{-1} dX)$：
+$$d(\log \det X) = \frac{d(\det X)}{\det X} = \operatorname{tr}(X^{-1} dX) = \operatorname{tr}((X^{-T})^T dX)$$
+所以 $\nabla_X f = X^{-T}$。
 
 ---
 
@@ -231,7 +244,7 @@ $$\nabla_\mathbf{w} L = X^T \operatorname{diag}(\mathbf{a} \odot (1 - \mathbf{a}
 | 矩阵梯度 | $\nabla_X f$ | 标量对矩阵各分量的偏导 |
 | 全微分 | $df = \operatorname{tr}(G^T dX)$ | 矩阵求导的核心技巧 |
 | 链式法则 | $\frac{\partial \mathbf{h}}{\partial \mathbf{x}} = \frac{\partial \mathbf{h}}{\partial \mathbf{g}} \frac{\partial \mathbf{g}}{\partial \mathbf{x}}$ | 逐层传播 |
-| 迹技巧 | $\operatorname{tr}(AB) = \operatorname{tr}(BA)$ | 矩阵求导中的「分部积分」 |
+| 迹技巧 | $\operatorname{tr}(AB) = \operatorname{tr}(BA) \implies df = \operatorname{tr}(G^T dX)$ | 矩阵求导三步：展开→交换迹→提取梯度 |
 
 ---
 

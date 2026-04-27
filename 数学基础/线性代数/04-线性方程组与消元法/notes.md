@@ -95,6 +95,8 @@ $$x_i = \left(b_i - \sum_{j=i+1}^{n} a_{ij} x_j\right) \Big/ a_{ii}$$
 | 无穷多解 | $\operatorname{rank}(A) = \operatorname{rank}([A\mid\mathbf{b}]) < n$ | $\infty$（$n - \operatorname{rank}$ 个自由变量） |
 | 无解 | $\operatorname{rank}(A) < \operatorname{rank}([A\mid\mathbf{b}])$ | 0 |
 
+> **注**：$\operatorname{rank}(A)$ = 矩阵 $A$ 中线性无关列的最大个数。操作上，高斯消元后非零行的个数就是秩。形式化定义与更多性质见 Ch05 §5。
+
 **齐次方程组 $A\mathbf{x} = \mathbf{0}$**：必有零解。非零解存在 $\iff \operatorname{rank}(A) < n$。
 
 ---
@@ -136,6 +138,8 @@ RREF 是解空间的「标准形式」。从 RREF 可以直接读出基础解系
 
 **与消元的关系**：消元过程中的乘数 $m_{ik} = a_{ik}^{(k)} / a_{kk}^{(k)}$ 正是 $\ell_{ik}$！
 
+**计算复杂度**：LU 分解本身 $O(n^3)$，前代+回代各 $O(n^2)$。对单个 $\mathbf{b}$，直接消元（$O(n^3)$）和 LU + 求解（$O(n^3) + O(n^2)$）复杂度相同。LU 的优势在于：当需要对 $k$ 个不同右端项解 $A\mathbf{x} = \mathbf{b}_i$ 时，只需做一次 $O(n^3)$ 分解 + $k$ 次 $O(n^2)$ 求解 → 总复杂度 $O(n^3 + kn^2)$，vs 直接消元 $O(kn^3)$。当 $k \gg n$ 时大幅节省。
+
 ### 7.4 带行交换的 LU：PLU 分解
 
 如果选主元时交换了行，则 $PA = LU$，其中 $P$ 是**置换矩阵**。
@@ -158,89 +162,27 @@ $A = LU$ 可理解为把复杂变换 $A$ 拆成两步：
 
 ---
 
-## 9. 代码实现
+## 9. 概念演示：消元过程追踪
+
+> 本章的编程练习在 `编程题/` 目录下。运行 `python3 grader.py` 自动批改。
 
 ```python
-from typing import List, Tuple, Optional
-import math
+import numpy as np
 
+A = np.array([[1., 2., 1.],
+              [2., 6., 1.],
+              [1., 1., 4.]])
+b = np.array([2., 7., 3.])
 
-def forward_elimination(
-    A: List[List[float]], b: List[float], use_pivoting: bool = True
-) -> Tuple[List[List[float]], List[float]]:
-    """前向消元（可选列主元），返回 (A, b) 的行阶梯形。"""
-    A = [list(row) for row in A]
-    b = list(b)
-    m, n = len(A), len(A[0])
-    row = 0
-    for col in range(n):
-        if row >= m:
-            break
-        # 选主元
-        if use_pivoting:
-            pivot_row = max(range(row, m), key=lambda r: abs(A[r][col]))
-            if abs(A[pivot_row][col]) < 1e-12:
-                continue
-            if pivot_row != row:
-                A[row], A[pivot_row] = A[pivot_row], A[row]
-                b[row], b[pivot_row] = b[pivot_row], b[row]
-        else:
-            if abs(A[row][col]) < 1e-12:
-                continue
-        # 消去下面的行
-        pivot = A[row][col]
-        for i in range(row + 1, m):
-            factor = A[i][col] / pivot
-            for j in range(col, n):
-                A[i][j] -= factor * A[row][j]
-            b[i] -= factor * b[row]
-        row += 1
-    return A, b
+# NumPy 直接求解（内部用 LU 分解）
+x = np.linalg.solve(A, b)
+print(f"解: {x}")  # [-3.  2.  1.]
 
-
-def back_substitution(A: List[List[float]], b: List[float]) -> Optional[List[float]]:
-    """回代求解上三角方程组。无解或无穷解返回 None。"""
-    m, n = len(A), len(A[0])
-    x = [0.0] * n
-    # 从最后一行往回
-    for i in range(m - 1, -1, -1):
-        # 找第一个非零列（主元列）
-        pivot_col = -1
-        for j in range(n):
-            if abs(A[i][j]) > 1e-12:
-                pivot_col = j
-                break
-        if pivot_col == -1:
-            if abs(b[i]) > 1e-12:
-                return None  # 0 = non-zero, 无解
-            continue  # 0 = 0, 自由变量（暂时跳过）
-        s = b[i]
-        for j in range(pivot_col + 1, n):
-            s -= A[i][j] * x[j]
-        x[pivot_col] = s / A[i][pivot_col]
-    return x
-
-
-def lu_decomposition(
-    A: List[List[float]]
-) -> Tuple[List[List[float]], List[List[float]]]:
-    """Doolittle LU 分解 (无选主元)，返回 (L, U)。"""
-    n = len(A)
-    L = [[0.0] * n for _ in range(n)]
-    U = [[0.0] * n for _ in range(n)]
-
-    for i in range(n):
-        # U 的第 i 行
-        for j in range(i, n):
-            s = sum(L[i][k] * U[k][j] for k in range(i))
-            U[i][j] = A[i][j] - s
-        # L 的第 i 列
-        L[i][i] = 1.0
-        for j in range(i + 1, n):
-            s = sum(L[j][k] * U[k][i] for k in range(i))
-            L[j][i] = (A[j][i] - s) / U[i][i]
-    return L, U
+# 验证：残差应接近零
+print(f"残差: {A @ x - b}")  # [0. 0. 0.]
 ```
+
+**要点**：`np.linalg.solve` 在后台自动选择最优算法（含列主元 LU 分解）。理解其内部机理（消元→上三角→回代）能帮助你判断何时解不稳定（条件数大，见 Ch05）。
 
 ---
 

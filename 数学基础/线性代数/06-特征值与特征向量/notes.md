@@ -121,7 +121,13 @@ $\mathbf{v}_k \to$ 主特征向量，$\lambda_{\max} \approx \frac{\mathbf{v}_k^
 
 **收敛条件**：$|\lambda_1| > |\lambda_2| \geq \cdots \geq |\lambda_n|$（主特征值严格大于其余）。
 
-**收敛速率**：$|\lambda_2 / \lambda_1|^k$。
+**收敛的几何直觉**：将初始向量 $\mathbf{v}_0$ 在特征基下展开：$\mathbf{v}_0 = \sum c_i \mathbf{v}_i$。每次乘以 $A$：$A^k \mathbf{v}_0 = \sum c_i \lambda_i^k \mathbf{v}_i = \lambda_1^k [c_1\mathbf{v}_1 + c_2(\lambda_2/\lambda_1)^k\mathbf{v}_2 + \cdots]$。若 $|\lambda_1| > |\lambda_2|$，则 $(\lambda_2/\lambda_1)^k \to 0$，$\mathbf{v}_k$ 逐渐趋向 $\mathbf{v}_1$ 的方向——即主特征向量。
+
+**收敛速率**：$|\lambda_2 / \lambda_1|^k$。$|\lambda_2 / \lambda_1|$ 越小，收敛越快。
+
+**不收敛的情况**：
+- $|\lambda_1| = |\lambda_2|$（如 $\lambda_1 = 1, \lambda_2 = -1$）→ 幂迭代在两者间振荡，不收敛到单一向量
+- $c_1 = 0$（初始向量恰好不含主特征方向的分量）→ 收敛到次大特征值（数值上极少发生）
 
 ---
 
@@ -135,7 +141,7 @@ $\mathbf{v}_k \to$ 主特征向量，$\lambda_{\max} \approx \frac{\mathbf{v}_k^
 
 ---
 
-## 8. 实对称矩阵的特殊性
+## 8. 实对称矩阵与 Hermitian 矩阵的特殊性
 
 > **定理（谱定理，实对称版）**：若 $A = A^T$，则
 > 1. 所有特征值都是实数
@@ -144,64 +150,40 @@ $\mathbf{v}_k \to$ 主特征向量，$\lambda_{\max} \approx \frac{\mathbf{v}_k^
 
 这是线性代数最优美的定理之一。见第 07 章详细展开。
 
+> **推广到复数域**：若 $A$ 是 **Hermitian 矩阵**（$A^* = A$），则：
+> 1. 所有特征值都是实数（$\lambda_i \in \mathbb{R}$）
+> 2. 不同特征值对应特征向量 Hermitian-正交（$\mathbf{v}_i^* \mathbf{v}_j = 0$）
+> 3. $A$ 可**酉对角化**：$A = U\Lambda U^*$，$U$ 为酉矩阵
+
+**为什么 Hermitian 矩阵的特征值是实数？** 设 $A\mathbf{v} = \lambda\mathbf{v}$，则 $\lambda\|\mathbf{v}\|^2 = \mathbf{v}^* A \mathbf{v} = (A\mathbf{v})^* \mathbf{v} = \overline{\lambda}\|\mathbf{v}\|^2$（用了 $A^* = A$）。故 $\overline{\lambda} = \lambda$，即 $\lambda \in \mathbb{R}$。证毕
+
+这一性质使 Hermitian 矩阵在量子力学中天然适合表示「可观测量」——测量结果必须是实数。
+
 ---
 
-## 9. 代码实现
+## 9. 概念演示：幂迭代的收敛过程
+
+> 本章的编程练习在 `编程题/` 目录下。运行 `python3 grader.py` 自动批改。
 
 ```python
-from typing import List, Tuple, Optional
-import math
+import numpy as np
 
+A = np.array([[2, 1],
+              [1, 2]])  # 特征值 3 和 1
+v = np.random.randn(2)
+v = v / np.linalg.norm(v)
 
-def characteristic_polynomial_2x2(A: List[List[float]]) -> Tuple[float, float, float]:
-    """返回 2x2 矩阵的特征多项式系数 (a, b, c)，即 aλ² + bλ + c = 0。"""
-    a = 1.0
-    b = -(A[0][0] + A[1][1])  # -tr(A)
-    c = A[0][0] * A[1][1] - A[0][1] * A[1][0]  # det(A)
-    return a, b, c
+for k in range(10):
+    v = A @ v
+    v = v / np.linalg.norm(v)
+    rayleigh = v @ A @ v / (v @ v)
+    print(f"k={k+1:2d}: λ≈{rayleigh:.6f}, v={v}")
 
-
-def eigenvalues_2x2(A: List[List[float]]) -> List[complex]:
-    """返回 2x2 矩阵的特征值列表。"""
-    a, b, c = characteristic_polynomial_2x2(A)
-    disc = b * b - 4 * a * c
-    if disc >= 0:
-        sqrt_disc = math.sqrt(disc)
-        return [(-b + sqrt_disc) / (2*a), (-b - sqrt_disc) / (2*a)]
-    else:
-        sqrt_disc = math.sqrt(-disc)
-        return [complex(-b/(2*a), sqrt_disc/(2*a)),
-                complex(-b/(2*a), -sqrt_disc/(2*a))]
-
-
-def power_iteration(
-    A: List[List[float]], max_iter: int = 1000, tol: float = 1e-10
-) -> Tuple[List[float], float]:
-    """幂迭代法求最大特征值和对应特征向量。"""
-    import random
-    n = len(A)
-    v = [random.random() for _ in range(n)]
-    v_norm = math.sqrt(sum(x*x for x in v))
-    v = [x / v_norm for x in v]
-
-    for _ in range(max_iter):
-        # A @ v
-        Av = [sum(A[i][j] * v[j] for j in range(n)) for i in range(n)]
-        norm_Av = math.sqrt(sum(x*x for x in Av))
-        v_new = [x / norm_Av for x in Av]
-
-        # 检查收敛
-        cos_sim = sum(a * b for a, b in zip(v, v_new))
-        if abs(cos_sim - 1.0) < tol:
-            v = v_new
-            break
-        v = v_new
-
-    # Rayleigh 商: λ ≈ v^T A v / v^T v
-    Av = [sum(A[i][j] * v[j] for j in range(n)) for i in range(n)]
-    rayleigh = sum(v[i] * Av[i] for i in range(n))
-    return v, rayleigh
+# 观察：Rayleigh 商从随机值快速逼近 3（主特征值）
+# 收敛速率 ≈ (λ2/λ1)^k = (1/3)^k — 每步缩小约 3 倍
 ```
+
+**要点**：幂迭代每次乘法 $A\mathbf{v}$ 都在放大主特征方向的分量比例。这正是特征分解在数值计算中的核心思想。
 
 ---
 

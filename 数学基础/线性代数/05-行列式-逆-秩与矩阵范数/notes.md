@@ -41,7 +41,7 @@ $\mathbb{R}^3$ 中：$\det(A)$ = 变换后平行六面体的**有向体积**。
 >
 > 3. **归一化**：$\det(I_n) = 1$
 
-这三条公理**唯一**确定了行列式。
+这三条公理**唯一**确定了行列式。（证明思路：公理 1+2 → 行列式是各列的斜对称多重线性函数 → 将 $A$ 写成列向量的线性组合 → 利用公理展开 → 唯一可能的形式即 Leibniz 公式 $\det(A) = \sum_{\sigma \in S_n} \operatorname{sgn}(\sigma) \prod_{i=1}^n a_{i,\sigma(i)}$。）
 
 **由公理推出的性质**：
 - 交换两列 → 行列式变号
@@ -158,15 +158,14 @@ $$A^{-1} = \frac{1}{\det(A)} \operatorname{adj}(A)$$
 
 ## 6. 迹 (Trace)
 
-> **定义 4（迹）**：$\operatorname{tr}(A) = \sum_{i=1}^{n} a_{ii}$
+> 迹的主定义见 Ch03 §7.3。此处补充与特征值的关系。
 
-**性质**：
-- $\operatorname{tr}(A + B) = \operatorname{tr}(A) + \operatorname{tr}(B)$
-- $\operatorname{tr}(cA) = c\operatorname{tr}(A)$
-- $\operatorname{tr}(AB) = \operatorname{tr}(BA)$（循环不变性）
-- $\operatorname{tr}(P^{-1}AP) = \operatorname{tr}(A)$（相似不变）
-- $\operatorname{tr}(A) = \sum_{i=1}^{n} \lambda_i$（特征值之和，第 06 章）
-- $\operatorname{tr}(A^T A) = \|A\|_F^2$
+$$\operatorname{tr}(A) = \sum_{i=1}^{n} a_{ii} = \sum_{i=1}^{n} \lambda_i$$
+
+**额外性质**：
+- $\operatorname{tr}(P^{-1}AP) = \operatorname{tr}(A)$（相似不变——特征值不变保证迹不变）
+- $\operatorname{tr}(A^T A) = \|A\|_F^2$（Frobenius 范数与迹的关系）
+- $\operatorname{tr}(AB) = \operatorname{tr}(BA)$（循环不变性，Ch03 已证）
 
 ---
 
@@ -214,15 +213,20 @@ $$\|A\|_* = \sum_i \sigma_i(A)$$
 
 > **定义 6（条件数）**：可逆方阵 $A$ 的条件数（对 $\ell_2$ 范数）：
 >
-> $$\kappa_2(A) = \|A\|_2 \cdot \|A^{-1}\|_2 = \frac{\sigma_{\max}(A)}{\sigma_{\min}(A)}$$
+> $$\kappa_2(A) = \|A\|_2 \cdot \|A^{-1}\|_2$$
 
 **几何意义**：条件数衡量 $A$ 对向量拉伸的不均匀程度。
 - $\kappa = 1$：$A$ 是正交矩阵（等距拉伸）
 - $\kappa$ 大：$A$ 在某些方向极度拉伸，某些方向极度压缩（「病态」）
 
-**为什么重要**：解 $A\mathbf{x} = \mathbf{b}$ 时，如果 $\kappa(A)$ 大，微小的 $\mathbf{b}$ 扰动会导致 $\mathbf{x}$ 巨大变化：
+**等价表达式**（见 Ch09 SVD 后）：$\kappa_2(A) = \sigma_{\max}(A) / \sigma_{\min}(A)$——最大与最小奇异值之比。但上述算子范数定义不依赖 SVD，可直接使用。
 
-$$\frac{\|\Delta\mathbf{x}\|}{\|\mathbf{x}\|} \leq \kappa(A) \cdot \frac{\|\Delta\mathbf{b}\|}{\|\mathbf{b}\|}$$
+**为什么重要—误差放大推导**：解 $A\mathbf{x} = \mathbf{b}$ 时，若 $\mathbf{b}$ 有微小扰动 $\Delta\mathbf{b}$，则解的变化 $\Delta\mathbf{x}$ 满足 $A(\mathbf{x} + \Delta\mathbf{x}) = \mathbf{b} + \Delta\mathbf{b}$，即 $A\Delta\mathbf{x} = \Delta\mathbf{b}$。取范数：
+$$\|\Delta\mathbf{x}\| = \|A^{-1}\Delta\mathbf{b}\| \leq \|A^{-1}\| \cdot \|\Delta\mathbf{b}\|$$
+同时 $\|\mathbf{b}\| = \|A\mathbf{x}\| \leq \|A\| \cdot \|\mathbf{x}\| \implies 1/\|\mathbf{x}\| \leq \|A\| / \|\mathbf{b}\|$。两式相乘得：
+$$\frac{\|\Delta\mathbf{x}\|}{\|\mathbf{x}\|} \leq \|A\| \cdot \|A^{-1}\| \cdot \frac{\|\Delta\mathbf{b}\|}{\|\mathbf{b}\|} = \kappa(A) \cdot \frac{\|\Delta\mathbf{b}\|}{\|\mathbf{b}\|}$$
+
+即相对误差被放大最多 $\kappa(A)$ 倍。
 
 **例子**：$A = \begin{bmatrix} 1 & 1 \\ 1 & 1.0001 \end{bmatrix}$。$\det(A) = 1\times 1.0001 - 1\times 1 = 0.0001$，接近奇异。条件数 $\approx 40000$——极度病态！
 
