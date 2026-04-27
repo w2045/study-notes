@@ -78,6 +78,16 @@ python3 grader.py    # 自动批改
 
 详见 [`PROGRESS.md`](PROGRESS.md)。
 
+## 协作与讨论
+
+- **Issues**：有疑问、纠错、改进建议 → [提交 Issue](https://github.com/w2045/study-notes/issues)
+- **Pull Requests**：想贡献内容（新章节、补充习题、修正错误）
+  1. Fork 本仓库
+  2. 创建新分支：`git checkout -b feature/你的改动`
+  3. 提交并 Push
+  4. 发起 Pull Request
+- **讨论**：每个 Issue / PR 下方可以自由讨论
+
 ## 致谢
 
 - CS61A: UC Berkeley, John DeNero
