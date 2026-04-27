@@ -52,7 +52,8 @@ code .          # 在 VS Code 中打开
 
 | 文件类型 | 快捷键 (macOS) | 快捷键 (Ubuntu/Windows) |
 |----------|---------------|--------------------------|
-| `.md` 预览 | `Cmd + K V` | `Ctrl + K V` |
+| `.md` 预览（侧边） | `Cmd + K V` | `Ctrl + K V` |
+| `.md` 预览（独立标签页） | `Cmd + Shift + V` | `Ctrl + Shift + V` |
 | `.tex` 编译+预览 | `Cmd + S` 保存即编译，`Cmd + Alt + V` 看 PDF | `Ctrl + S` / `Ctrl + Alt + V` |
 
 ### 做编程作业
@@ -71,7 +72,7 @@ python3 grader.py    # 自动批改
 
 | 学科 | 进度 |
 |------|------|
-| Python基础 | 1/13 |
+| Python基础 | 12/12 |
 | 线性代数 | 1/7 |
 | 基础工具 | 1/6 |
 | 其余 | 待开始 |

@@ -202,11 +202,16 @@ print("折叠中也可以有代码")
 
 打开 `.md` 文件后：
 
-| 平台 | 内置预览 | Markdown Preview Enhanced (推荐) |
-|------|----------|----------------------------------|
-| macOS | `Cmd + Shift + V` | `Cmd + K V` |
-| Ubuntu | `Ctrl + Shift + V` | `Ctrl + K V` |
-| Windows | `Ctrl + Shift + V` | `Ctrl + K V` |
+| 平台 | 侧边预览（推荐） | 独立标签页预览 |
+|------|:---------------:|:-------------:|
+| macOS | `Cmd + K V` | `Cmd + Shift + V` |
+| Ubuntu | `Ctrl + K V` | `Ctrl + Shift + V` |
+| Windows | `Ctrl + K V` | `Ctrl + Shift + V` |
+
+- **侧边预览** (`K V`)：在编辑器旁边打开，同步滚动，适合边写边看
+- **独立标签页** (`Shift + V`)：在新标签页打开，适合只看不改
+
+> 如果安装了 Markdown Preview Enhanced 扩展，侧边预览还会额外支持数学公式渲染、流程图等高级功能。
 
 ### 常用快捷键
 
@@ -215,6 +220,7 @@ print("折叠中也可以有代码")
 | 加粗 | `Cmd + B` | `Ctrl + B` |
 | 斜体 | `Cmd + I` | `Ctrl + I` |
 | 侧边预览 | `Cmd + K V` | `Ctrl + K V` |
+| 独立标签页预览 | `Cmd + Shift + V` | `Ctrl + Shift + V` |
 | 折叠区域 | `Cmd + Shift + [` | `Ctrl + Shift + [` |
 | 展开区域 | `Cmd + Shift + ]` | `Ctrl + Shift + ]` |
 | 命令面板 | `Cmd + Shift + P` | `Ctrl + Shift + P` |
