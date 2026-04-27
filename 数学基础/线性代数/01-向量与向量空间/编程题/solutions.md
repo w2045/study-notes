@@ -1,196 +1,209 @@
-# 线性代数 · 第一章 · 参考答案
+# 线性代数 · 第一章 · 编程题 — 参考答案
 
 ---
 
-## Q1 — 向量加减
+## Q1 ⭐ 向量加法
 
-<details><summary>点击查看答案</summary>
+<details><summary>解</summary>
 
 ```python
-def vector_sum(u, v):
+def vector_sum(u: List[float], v: List[float]) -> List[float]:
     return [a + b for a, b in zip(u, v)]
+```
 
-def vector_diff(u, v):
+**要点**：`zip` 逐分量相加。
+
+</details>
+
+---
+
+## Q2 ⭐ 向量减法
+
+<details><summary>解</summary>
+
+```python
+def vector_diff(u: List[float], v: List[float]) -> List[float]:
     return [a - b for a, b in zip(u, v)]
 ```
 
-**要点**: `zip` 逐对取出分量。注意维数应相同（grader 保证这一点）。
 </details>
 
 ---
 
-## Q2 — 标量乘法
+## Q3 ⭐ 标量乘法
 
-<details><summary>点击查看答案</summary>
+<details><summary>解</summary>
 
 ```python
-def scalar_mult(c, v):
+def scalar_mult(c: float, v: List[float]) -> List[float]:
     return [c * x for x in v]
 ```
+
 </details>
 
 ---
 
-## Q3 — 欧几里得范数
+## Q4 ⭐⭐ 线性组合
 
-<details><summary>点击查看答案</summary>
-
-```python
-def euclidean_norm(v):
-    return math.sqrt(sum(x**2 for x in v))
-```
-</details>
-
----
-
-## Q4 — 点积
-
-<details><summary>点击查看答案</summary>
+<details><summary>解</summary>
 
 ```python
-def dot_product(u, v):
-    return sum(a * b for a, b in zip(u, v))
-```
-</details>
-
----
-
-## Q5 — 归一化
-
-<details><summary>点击查看答案</summary>
-
-```python
-def normalize(v):
-    n = math.sqrt(sum(x**2 for x in v))
-    if n == 0:
-        return None
-    return [x / n for x in v]
-```
-
-**要点**: 零向量不能归一化，返回 `None`。不要忘记检查除零。
-</details>
-
----
-
-## Q6 — 余弦相似度
-
-<details><summary>点击查看答案</summary>
-
-```python
-def cosine_similarity(u, v):
-    nu = math.sqrt(sum(x**2 for x in u))
-    nv = math.sqrt(sum(x**2 for x in v))
-    if nu == 0 or nv == 0:
-        return None
-    return sum(a * b for a, b in zip(u, v)) / (nu * nv)
-```
-
-**要点**: 先检查零向量再除法，避免 `ZeroDivisionError`。
-</details>
-
----
-
-## Q7 — 判断正交性
-
-<details><summary>点击查看答案</summary>
-
-```python
-def is_orthogonal(u, v):
-    dot = sum(a * b for a, b in zip(u, v))
-    return math.isclose(dot, 0.0, abs_tol=1e-9)
-```
-
-**要点**: 不要用 `dot == 0.0`——浮点运算有误差，用 `math.isclose`。
-</details>
-
----
-
-## Q8 — 检查子空间条件
-
-<details><summary>点击查看答案</summary>
-
-```python
-def is_subspace_candidate(vectors):
-    if not vectors:
-        return False
-    for v in vectors:
-        if all(x == 0 for x in v):
-            return True
-    return False
-```
-
-**要点**: 子空间的必要条件：零向量必须在集合中。空集不是子空间。
-</details>
-
----
-
-## Q9 — 线性组合
-
-<details><summary>点击查看答案</summary>
-
-```python
-def linear_combination(vectors, coeffs):
+def linear_combination(
+    vectors: List[List[float]], coeffs: List[float]
+) -> List[float]:
     if not vectors:
         return []
-    dim = len(vectors[0])
-    result = [0.0] * dim
+    n = len(vectors[0])
+    result = [0.0] * n
     for c, v in zip(coeffs, vectors):
-        for i in range(dim):
+        for i in range(n):
             result[i] += c * v[i]
     return result
 ```
 
-**推导**：线性组合 = 逐分量累加 $c_j \cdot v_{j,i}$。
+**要点**：初始化为零向量，逐向量累加 $c_i \mathbf{v}_i$。
+
 </details>
 
 ---
 
-## Q10 — 判断共线性（二维）
+## Q5 ⭐ 零向量判定
 
-<details><summary>点击查看答案</summary>
+<details><summary>解</summary>
 
 ```python
-def are_collinear_2d(u, v):
-    nu = math.sqrt(u[0]**2 + u[1]**2)
-    nv = math.sqrt(v[0]**2 + v[1]**2)
-    if nu == 0 or nv == 0:
-        return True          # 零向量与任意向量共线
-    dot = u[0]*v[0] + u[1]*v[1]
-    return math.isclose(abs(dot), nu * nv, rel_tol=1e-9)
+def is_zero_vector(v: List[float]) -> bool:
+    return all(math.isclose(x, 0) for x in v)
 ```
 
-**原理**：$|\mathbf{u}\cdot\mathbf{v}| = \|\mathbf{u}\|\|\mathbf{v}\| \iff$ 夹角为 0° 或 180°，即共线。
 </details>
 
 ---
 
-## Q11 — 平行四边形面积
+## Q6 ⭐⭐ 标准基向量
 
-<details><summary>点击查看答案</summary>
+<details><summary>解</summary>
 
 ```python
-def span_area_2d(u, v):
-    return abs(u[0] * v[1] - u[1] * v[0])
+def standard_basis(i: int, n: int) -> List[float]:
+    v = [0.0] * n
+    v[i - 1] = 1.0
+    return v
 ```
 
-**原理**：$\begin{vmatrix} u_1 & u_2 \\ v_1 & v_2 \end{vmatrix}$ 的绝对值等于平行四边形面积。这是行列式的几何意义。
+**要点**：`i` 是 1-indexed。
+
 </details>
 
 ---
 
-## Q12 — 三角形判定（向量）
+## Q7 ⭐⭐ 二维线性无关判定
 
-<details><summary>点击查看答案</summary>
+<details><summary>解</summary>
 
 ```python
-def is_triangle_vector(a, b, c):
-    # 向量 ab = b - a, ac = c - a
-    ab = [b[0] - a[0], b[1] - a[1]]
-    ac = [c[0] - a[0], c[1] - a[1]]
-    # 面积 = |ab × ac| (二维叉积)
-    area = abs(ab[0] * ac[1] - ab[1] * ac[0])
-    return area > 0  # 不是 math.isclose(area, 0)
+def are_independent_2d(u: List[float], v: List[float]) -> bool:
+    if is_zero_vector(u) or is_zero_vector(v):
+        return False
+    cross = u[0] * v[1] - u[1] * v[0]
+    return not math.isclose(abs(cross), 0)
 ```
 
-**原理**：三点共线 $\iff$ $\overrightarrow{AB}$ 与 $\overrightarrow{AC}$ 共线 $\iff$ 叉积为零。退化三角形面积 = 0。
+**要点**：二维中两向量线性无关 $\iff$ 都不为零且不共线。共线判据：$u_1 v_2 = u_2 v_1$。
+
+</details>
+
+---
+
+## Q8 ⭐⭐ 二维 span 包含判定
+
+<details><summary>解</summary>
+
+```python
+def is_in_span_2d(a: List[float], b: List[float]) -> bool:
+    if is_zero_vector(a):
+        return is_zero_vector(b)
+    cross = a[0] * b[1] - a[1] * b[0]
+    return math.isclose(cross, 0)
+```
+
+**要点**：$\mathbf{b} \in \operatorname{span}\{\mathbf{a}\} \iff$ 共线。$\mathbf{a} = \mathbf{0}$ 时只有 $\mathbf{b} = \mathbf{0}$ 才在 span 中。
+
+</details>
+
+---
+
+## Q9 ⭐ 子空间必要条件
+
+<details><summary>解</summary>
+
+```python
+def contains_zero_vector(vectors: List[List[float]]) -> bool:
+    return any(is_zero_vector(v) for v in vectors)
+```
+
+</details>
+
+---
+
+## Q10 ⭐⭐⭐ 基坐标表示
+
+<details><summary>解</summary>
+
+```python
+def coordinates_in_basis(
+    basis: List[List[float]], v: List[float]
+) -> Optional[List[float]]:
+    b1, b2 = basis[0], basis[1]
+    det = b1[0] * b2[1] - b1[1] * b2[0]
+    if math.isclose(det, 0):
+        return None
+    c1 = (v[0] * b2[1] - v[1] * b2[0]) / det
+    c2 = (b1[0] * v[1] - b1[1] * v[0]) / det
+    return [c1, c2]
+```
+
+**要点**：二维用 Cramer 法则解 $\begin{bmatrix}\mathbf{b}_1 & \mathbf{b}_2\end{bmatrix}\begin{bmatrix}c_1\\c_2\end{bmatrix} = \mathbf{v}$。行列式非零保证基的有效性。
+
+</details>
+
+---
+
+## Q11 ⭐⭐⭐ 三维线性无关判定
+
+<details><summary>解</summary>
+
+```python
+def are_independent_3d(
+    u: List[float], v: List[float], w: List[float]
+) -> bool:
+    if is_zero_vector(u) or is_zero_vector(v) or is_zero_vector(w):
+        return False
+    # 标量三重积 (u × v) · w
+    cross_x = u[1] * v[2] - u[2] * v[1]
+    cross_y = u[2] * v[0] - u[0] * v[2]
+    cross_z = u[0] * v[1] - u[1] * v[0]
+    triple = cross_x * w[0] + cross_y * w[1] + cross_z * w[2]
+    return not math.isclose(triple, 0)
+```
+
+**要点**：$\mathbb{R}^3$ 中三个向量线性无关 $\iff$ 标量三重积 $(u \times v) \cdot w \neq 0$（体积非零）。
+
+</details>
+
+---
+
+## Q12 ⭐⭐⭐ 扩充为基（二维）
+
+<details><summary>解</summary>
+
+```python
+def extend_to_basis_2d(v: List[float]) -> Optional[List[List[float]]]:
+    if is_zero_vector(v):
+        return None
+    u = [-v[1], v[0]]
+    return [v, u]
+```
+
+**要点**：旋转 90° 得 $[-y, x]^T$，与 $\mathbf{v}$ 不共线。叉积 $x^2 + y^2 > 0$，线性无关。
 </details>

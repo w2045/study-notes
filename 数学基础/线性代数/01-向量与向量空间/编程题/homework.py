@@ -1,7 +1,7 @@
 """
-线性代数 · 第一章 · 向量与向量空间 — 作业代码
+线性代数 · 第一章 · 向量与向量空间 — 编程作业
 
-所有函数使用普通 list 表示向量，不依赖 Vector 类。
+所有函数通过 list[float] 表示向量（不用 numpy）。
 完成函数体后运行: python3 grader.py
 """
 
@@ -9,7 +9,7 @@ import math
 from typing import List, Optional
 
 
-# ─── Q1 ⭐ 向量加减 ───
+# ─── Q1 ⭐ 向量加法 ───
 
 def vector_sum(u: List[float], v: List[float]) -> List[float]:
     """返回 u + v。
@@ -20,6 +20,8 @@ def vector_sum(u: List[float], v: List[float]) -> List[float]:
     pass
 
 
+# ─── Q2 ⭐ 向量减法 ───
+
 def vector_diff(u: List[float], v: List[float]) -> List[float]:
     """返回 u - v。
 
@@ -29,7 +31,7 @@ def vector_diff(u: List[float], v: List[float]) -> List[float]:
     pass
 
 
-# ─── Q2 ⭐ 标量乘法 ───
+# ─── Q3 ⭐ 标量乘法 ───
 
 def scalar_mult(c: float, v: List[float]) -> List[float]:
     """返回 c * v。
@@ -42,87 +44,7 @@ def scalar_mult(c: float, v: List[float]) -> List[float]:
     pass
 
 
-# ─── Q3 ⭐ 欧几里得范数 ───
-
-def euclidean_norm(v: List[float]) -> float:
-    """返回 ||v||_2。不允许用 math.hypot 或 numpy。
-
-    >>> euclidean_norm([3, 4])
-    5.0
-    >>> euclidean_norm([0, 0])
-    0.0
-    """
-    pass
-
-
-# ─── Q4 ⭐ 点积 ───
-
-def dot_product(u: List[float], v: List[float]) -> float:
-    """返回 u · v。
-
-    >>> dot_product([1, 2], [3, 4])
-    11
-    >>> dot_product([1, 0], [0, 1])
-    0
-    """
-    pass
-
-
-# ─── Q5 ⭐ 归一化 ───
-
-def normalize(v: List[float]) -> Optional[List[float]]:
-    """返回 v / ||v||。零向量返回 None。
-
-    >>> normalize([3, 4])
-    [0.6, 0.8]
-    >>> normalize([0, 0]) is None
-    True
-    """
-    pass
-
-
-# ─── Q6 ⭐⭐ 余弦相似度 ───
-
-def cosine_similarity(u: List[float], v: List[float]) -> Optional[float]:
-    """返回 u, v 的余弦相似度。任意为零向量则返回 None。
-
-    >>> cosine_similarity([1, 0], [0, 1])
-    0.0
-    >>> cosine_similarity([1, 2], [2, 4])
-    1.0
-    >>> cosine_similarity([0, 0], [1, 1]) is None
-    True
-    """
-    pass
-
-
-# ─── Q7 ⭐⭐ 判断正交性 ───
-
-def is_orthogonal(u: List[float], v: List[float]) -> bool:
-    """判断 u 和 v 是否正交 (u·v ≈ 0)。
-
-    >>> is_orthogonal([1, 0], [0, 1])
-    True
-    >>> is_orthogonal([1, 2], [3, 4])
-    False
-    """
-    pass
-
-
-# ─── Q8 ⭐⭐ 检查子空间条件 ───
-
-def is_subspace_candidate(vectors: List[List[float]]) -> bool:
-    """检查向量列表中是否包含零向量 (子空间必要条件)。
-
-    >>> is_subspace_candidate([[1, 2], [0, 0], [3, 4]])
-    True
-    >>> is_subspace_candidate([[1, 2], [3, 4]])
-    False
-    """
-    pass
-
-
-# ─── Q9 ⭐⭐⭐ 线性组合 ───
+# ─── Q4 ⭐⭐ 线性组合 ───
 
 def linear_combination(
     vectors: List[List[float]], coeffs: List[float]
@@ -137,45 +59,126 @@ def linear_combination(
     pass
 
 
-# ─── Q10 ⭐⭐ 判断共线性 (二维) ───
+# ─── Q5 ⭐ 零向量判定 ───
 
-def are_collinear_2d(u: List[float], v: List[float]) -> bool:
-    """判断两个二维向量是否共线 (夹角 0° 或 180°, 或含零向量)。
+def is_zero_vector(v: List[float]) -> bool:
+    """判断 v 是否为零向量（所有分量 ≈ 0）。
 
-    >>> are_collinear_2d([1, 2], [2, 4])
+    >>> is_zero_vector([0, 0, 0])
     True
-    >>> are_collinear_2d([1, 2], [3, 4])
+    >>> is_zero_vector([1, 0, 0])
     False
-    >>> are_collinear_2d([0, 0], [1, 2])
+    """
+    pass
+
+
+# ─── Q6 ⭐⭐ 标准基向量 ───
+
+def standard_basis(i: int, n: int) -> List[float]:
+    """返回 R^n 中第 i 个标准基向量 e_i (1-indexed)。
+
+    >>> standard_basis(1, 3)
+    [1.0, 0.0, 0.0]
+    >>> standard_basis(3, 4)
+    [0.0, 0.0, 1.0, 0.0]
+    """
+    pass
+
+
+# ─── Q7 ⭐⭐ 二维线性无关判定 ───
+
+def are_independent_2d(u: List[float], v: List[float]) -> bool:
+    """判断两个二维向量是否线性无关（不共线，且都不为零）。
+
+    >>> are_independent_2d([1, 0], [0, 1])
+    True
+    >>> are_independent_2d([1, 2], [2, 4])
+    False
+    >>> are_independent_2d([0, 0], [1, 2])
+    False
+    """
+    pass
+
+
+# ─── Q8 ⭐⭐ 二维 span 包含判定 ───
+
+def is_in_span_2d(
+    a: List[float], b: List[float]
+) -> bool:
+    """判断二维向量 b 是否在 a 的 span 中（即 b 与 a 共线或 a 为零向量时 b 也为零）。
+
+    >>> is_in_span_2d([2, 3], [4, 6])
+    True
+    >>> is_in_span_2d([2, 3], [4, 5])
+    False
+    >>> is_in_span_2d([0, 0], [0, 0])
     True
     """
     pass
 
 
-# ─── Q11 ⭐⭐ 平行四边形面积 ───
+# ─── Q9 ⭐ 子空间必要条件 ───
 
-def span_area_2d(u: List[float], v: List[float]) -> float:
-    """返回 u, v 张成的平行四边形面积 (二维)。
+def contains_zero_vector(vectors: List[List[float]]) -> bool:
+    """判断向量列表中是否包含零向量（子空间的必要条件）。
 
-    >>> span_area_2d([1, 0], [0, 1])
-    1.0
-    >>> span_area_2d([3, 0], [0, 4])
-    12.0
-    >>> span_area_2d([1, 2], [2, 4])
-    0.0
+    >>> contains_zero_vector([[1, 2], [0, 0], [3, 4]])
+    True
+    >>> contains_zero_vector([[1, 2], [3, 4]])
+    False
     """
     pass
 
 
-# ─── Q12 ⭐⭐⭐ 三角形判定 ───
+# ─── Q10 ⭐⭐⭐ 基坐标表示 ───
 
-def is_triangle_vector(a: List[float], b: List[float], c: List[float]) -> bool:
-    """三点 (各为二维向量) 能否构成非退化三角形 (面积 > 0)?
+def coordinates_in_basis(
+    basis: List[List[float]], v: List[float]
+) -> Optional[List[float]]:
+    """在 R^2 中，用给定基 {b1, b2} 表示 v。返回系数 [c1, c2]。
+    前提：basis 是 R^2 的一组基（两个线性无关的二维向量）。
+    若 basis 不是基（共线或含零向量），返回 None。
 
-    >>> is_triangle_vector([0, 0], [1, 0], [0, 1])
+    >>> coordinates_in_basis([[1, 0], [0, 1]], [3, 4])
+    [3.0, 4.0]
+    >>> coordinates_in_basis([[1, 1], [1, -1]], [2, 0])
+    [1.0, 1.0]
+    >>> coordinates_in_basis([[1, 2], [2, 4]], [3, 5]) is None
     True
-    >>> is_triangle_vector([0, 0], [1, 1], [2, 2])
+    """
+    pass
+
+
+# ─── Q11 ⭐⭐⭐ 三维线性无关判定 ───
+
+def are_independent_3d(
+    u: List[float], v: List[float], w: List[float]
+) -> bool:
+    """判断三个三维向量是否线性无关。
+    提示：计算标量三重积 (u × v) · w 是否非零。
+
+    >>> are_independent_3d([1, 0, 0], [0, 1, 0], [0, 0, 1])
+    True
+    >>> are_independent_3d([1, 0, 0], [0, 1, 0], [1, 1, 0])
     False
+    >>> are_independent_3d([0, 0, 0], [1, 2, 3], [4, 5, 6])
+    False
+    """
+    pass
+
+
+# ─── Q12 ⭐⭐⭐ 扩充为基（二维） ───
+
+def extend_to_basis_2d(v: List[float]) -> Optional[List[List[float]]]:
+    """给定一个非零二维向量 v，找到另一个向量 u 使得 {v, u} 构成 R^2 的一组基。
+    若 v 为零向量，返回 None。
+
+    >>> extend_to_basis_2d([1, 0])
+    [[1.0, 0.0], [0.0, 1.0]]
+    >>> extend_to_basis_2d([3, 4])
+    [[3.0, 4.0], [-4.0, 3.0]]
+    >>> extend_to_basis_2d([0, 0]) is None
+    True
     """
     pass
 
