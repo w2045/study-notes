@@ -1,96 +1,145 @@
 # Study Project — 自学参考书工作流
 
 ## 会话启动协议（每次新会话必做）
-1. 读取 `CLAUDE.md`（本文件）了解项目约定
+1. 读取 `CLAUDE.md` 了解项目约定
 2. 读取 `PROGRESS.md` 获取当前进度与上次中断点
-3. 向用户报告当前进度，询问是继续上次中断点还是切换主题
+3. 向用户报告当前进度，询问是否从上次中断点继续
 
 ## 会话结束协议（每轮结束前必做）
-1. 将本次完成的内容落盘
-2. 更新 `PROGRESS.md`：标记已完成的章节、记录「下次从 X 开始」
-3. 确保所有交叉引用链接正确
-4. Commit + push 到 `origin main`（远程: `https://github.com/w2045/study-notes`）
+1. 内容落盘
+2. 更新 `PROGRESS.md`：标记已完成章节、更新「下次从 X 开始」
+3. Commit + push 到 `origin main`（远程: `https://github.com/w2045/study-notes`）
 
-## 产出格式：参考书风格
-每个章节文件为 Markdown（数学用 `$$` / `$` LaTeX 嵌入），必须包含：
-1. **前置与延伸** — 文档顶部注明 `← 前置: [章节]` 和 `→ 延伸: [章节]`
-2. **直觉引入** — 用日常场景解释「为什么需要这个东西」
-3. **形式化定义** — 精确定义、符号约定、前提假设
-4. **推导与证明** — 手把手推导，不留「显然可得」
-5. **代码实现** — Python 从零实现核心算法，逐行解释
-6. **例题（≥3 个）** — 全解，展示典型错误
-7. **练习题（≥5 个）** — 答案用 `<details>` 折叠
+---
 
-## 编译
-- Markdown 中嵌入 LaTeX 公式，VS Code 直接预览
-- 若某章公式极度密集，写成纯 `.tex` 文件，用 `xelatex` 编译（中文支持）
+## 学科目录
 
-## 目录结构
 ```
 Study/
-├── CLAUDE.md              # 本文件（项目约定）
-├── PROGRESS.md            # 进度追踪（每次会话更新）
-├── math/
-│   ├── linear-algebra/    # 7 章
-│   ├── calculus/          # 6 章
-│   ├── probability/       # 7 章
-│   ├── convex-optimization/  # 8 章
-│   └── information-theory/   # 5 章
-├── CS61A/                 # 后续
-├── CS106B/                # 后续
-├── CS231N/                # 后续
-├── RL/                    # 后续
-├── LLM/                   # 后续
-├── notes/                 # 交叉主题笔记
-└── resources/             # 论文列表、外部链接
+├── CLAUDE.md
+├── PROGRESS.md
+├── Python基础/             # 参考 CS61A
+├── 数据结构与算法/          # 参考 CS106B
+├── 计算机视觉与深度学习/    # 参考 CS231N
+├── 强化学习/
+├── 大语言模型/
+├── 数学基础/
+│   ├── 线性代数/
+│   ├── 微积分/
+│   ├── 概率论/
+│   ├── 凸优化/
+│   └── 信息论/
+├── notes/                  # 跨主题散篇笔记
+└── resources/              # 论文列表、外部链接
 ```
 
-## 使用的外部资源
+## 每章结构（文件夹模式）
+
+每章是一个文件夹，包含：
+
+```
+学科名/XX-章节名/
+├── notes.md        # 参考笔记（详细版）
+├── homework.md     # 作业题目（≥10 题）
+├── homework.py     # Python 代码骨架，学生填写
+├── grader.py       # 自动批改脚本
+└── solutions.md    # 参考答案（<details> 折叠）
+```
+
+### notes.md 规范
+1. `← 前置: [章节]` 和 `→ 延伸: [章节]` 在顶部和底部
+2. 直觉引入 → 形式定义 → 推导/证明 → 代码 → 例题 → 常见误区
+3. 数学用 `$$` / `$` 嵌入。代码配上逐行解释
+4. 末尾附「本章核心概念速查」表
+
+### homework.md 规范
+- ≥10 题，标注难度 ⭐/⭐⭐/⭐⭐⭐
+- 题型混合：代码补全、实现函数、找 bug、doctest、综合题
+- 每题给出公开测试用例
+
+### homework.py 规范
+- 函数签名 + docstring（含 doctest）
+- 函数体用 `pass` 占位
+- 顶部注明运行方式：`python3 grader.py`
+
+### grader.py 规范
+- `import importlib` 动态导入 `homework.py`
+- 每道题多组测试用例（含边界）定义在 `TEST_CASES`
+- 浮点数比较用 `math.isclose`
+- 输出每道题的 ✅/❌ + 错误详情 + 总分
+
+### solutions.md 规范
+- 所有答案用 `<details><summary>` 折叠
+- 每题附「要点」解释关键思路和常见错误
+
+---
+
+## 外部参考资源
 - 凸优化课件：`~/Desktop/Convex Optimization/`（16 讲 PDF）
 - CS106B 课件：`~/Desktop/CS106B_Slides/`（14 讲 PDF + Stanford Reader）
-- CS61A 作业：`~/Desktop/Code/CS61A-Assignments/`（已完成，用作参考）
+- Python 基础作业：`~/Desktop/Code/CS61A-Assignments/`（已完成，用作参考）
+
+---
+
+## Python基础 大纲（13 章）
+
+01 — 表达式、变量与函数定义
+02 — 控制流：布尔、条件、while 循环
+03 — 高阶函数
+04 — 环境图与 Lambda
+05 — 递归
+06 — 树递归
+07 — 序列：列表、字符串、元组
+08 — 数据抽象
+09 — 可变性
+10 — 迭代器与生成器
+11 — 对象与类
+12 — 继承
+13 — Scheme 与解释器
+
+---
 
 ## 数学篇章大纲（33 章）
 
-### 线性代数 (math/linear-algebra/) — 7 章
-01-vectors-spaces.md — 向量、线性组合、向量空间
-02-matrices-transforms.md — 矩阵与线性变换
-03-linear-systems.md — 线性方程组与消元法
-04-determinant-inverse-rank.md — 行列式、逆、秩
-05-eigenvalues-eigenvectors.md — 特征值与特征向量
-06-svd.md — 奇异值分解
-07-matrix-calculus.md — 矩阵微积分
+### 线性代数
+01 — 向量、线性组合、向量空间
+02 — 矩阵与线性变换
+03 — 线性方程组与消元法
+04 — 行列式、逆、秩
+05 — 特征值与特征向量
+06 — 奇异值分解 (SVD)
+07 — 矩阵微积分
 
-### 微积分 (math/calculus/) — 6 章
-01-limits-derivatives.md — 极限、导数与微分
-02-differentiation-chainrule.md — 求导法则与链式法则
-03-partial-gradients.md — 偏导数与梯度
-04-jacobian-hessian.md — 方向导数、Jacobian、Hessian
-05-taylor-series.md — 泰勒展开与近似
-06-optimization-calc.md — 优化中的微积分（驻点、鞍点）
+### 微积分
+01 — 极限、导数与微分
+02 — 求导法则与链式法则
+03 — 偏导数与梯度
+04 — 方向导数、Jacobian、Hessian
+05 — 泰勒展开与近似
+06 — 优化中的微积分
 
-### 概率论 (math/probability/) — 7 章
-01-axioms-conditional.md — 概率公理与条件概率
-02-random-variables.md — 随机变量与分布函数
-03-expectation-moments.md — 期望、方差、矩
-04-discrete-distributions.md — 常见离散分布
-05-continuous-distributions.md — 常见连续分布
-06-bayes-inference.md — 贝叶斯定理与贝叶斯推断
-07-mle.md — 最大似然估计
+### 概率论
+01 — 概率公理与条件概率
+02 — 随机变量与分布函数
+03 — 期望、方差、矩
+04 — 常见离散分布
+05 — 常见连续分布
+06 — 贝叶斯定理与贝叶斯推断
+07 — 最大似然估计
 
-### 凸优化 (math/convex-optimization/) — 8 章
-01-intro-math-review.md — 引言与数学回顾
-02-convex-sets.md — 凸集
-03-convex-functions-1.md — 凸函数 (上)
-04-convex-functions-2.md — 凸函数 (下)
-05-convex-optimization-problems.md — 凸优化问题
-06-gradient-descent.md — 梯度下降法
-07-newton-proximal.md — 牛顿法与近端梯度
-08-duality-kkt.md — 对偶理论与 KKT 条件
+### 凸优化
+01 — 引言与数学回顾
+02 — 凸集
+03 — 凸函数 (上)
+04 — 凸函数 (下)
+05 — 凸优化问题
+06 — 梯度下降法
+07 — 牛顿法与近端梯度
+08 — 对偶理论与 KKT 条件
 
-### 信息论 (math/information-theory/) — 5 章
-01-entropy.md — 熵与信息量
-02-cross-entropy-kl.md — 交叉熵与 KL 散度
-03-mutual-information.md — 互信息
-04-source-coding.md — 信源编码
-05-channel-capacity.md — 信道容量
+### 信息论
+01 — 熵与信息量
+02 — 交叉熵与 KL 散度
+03 — 互信息
+04 — 信源编码
+05 — 信道容量
