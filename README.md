@@ -35,8 +35,7 @@ XX-章节名/
 ├── notes.md
 ├── 理论题/                    # 数学类有，编程类无
 │   ├── homework.tex
-│   └── solutions.tex          # .gitignore 忽略
-└── 编程题/ 或 作业/
+│   └── solutions.tex          └── 编程题/ 或 作业/
     ├── homework.md            # 题目描述
     ├── homework.py            # 代码骨架（pass 占位）
     ├── grader.py              # 自动批改
@@ -50,8 +49,7 @@ XX-章节名/
 ├── notes.md
 └── 理论题/
     ├── homework.tex
-    └── solutions.tex          # .gitignore 忽略
-```
+    └── solutions.tex          ```
 
 ## 使用方式
 

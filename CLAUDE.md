@@ -44,12 +44,12 @@ XX-章节名/
 ├── notes.md
 ├── 理论题/
 │   ├── homework.tex     # 理论题（LaTeX，批改用）
-│   └── solutions.tex    # 理论题答案（.gitignore 忽略）
+│   └── solutions.tex    # 理论题答案
 └── 编程题/
     ├── homework.md       # 题目描述
     ├── homework.py       # 代码骨架（pass 占位）
     ├── grader.py         # 自动批改
-    └── solutions.md      # 参考答案（.gitignore 忽略）
+    └── solutions.md      # 参考答案
 ```
 
 纯理论章节（如行列式、Jordan、矩阵微积分）：
@@ -106,13 +106,16 @@ XX-章节名/
 - 浮点数比较用 `math.isclose`
 - 输出每道题的 ✅/❌ + 错误详情 + 总分
 
-### solutions.md 规范（.gitignore 忽略）
+### solutions.md 规范
 - 所有答案用 `<details><summary>` 折叠
 - 每题附「要点」解释关键思路和常见错误
 
-### 答案文件约定
-- `solutions.md`, `solutions.tex` 由 `.gitignore` 忽略，不推上 GitHub
-- `homework.py` 是代码骨架模板（`pass` 占位），正常提交
+---
+
+## 分支策略
+
+- `main`：完整参考书（笔记 + 题目模板 + 答案），由 AI 助手维护
+- 个人分支：clone 后自行创建，用于写作业。新内容从 `main` merge
 
 ---
 
