@@ -47,10 +47,9 @@ XX-章节名/
 │   └── solutions.tex    # 理论题答案（.gitignore 忽略）
 └── 编程题/
     ├── homework.md       # 题目描述
-    ├── homework_skeleton.py  # 骨架（推上 GitHub）
-    ├── homework.py           # 用户填写（.gitignore 忽略）
-    ├── grader.py             # 自动批改
-    └── solutions.md          # 参考答案（.gitignore 忽略）
+    ├── homework.py       # 代码骨架（pass 占位）
+    ├── grader.py         # 自动批改
+    └── solutions.md      # 参考答案（.gitignore 忽略）
 ```
 
 纯理论章节（如行列式、Jordan、矩阵微积分）：
@@ -96,13 +95,10 @@ XX-章节名/
 - 题型混合：代码补全、实现函数、找 bug、doctest、综合题
 - 每题给出公开测试用例
 
-### homework_skeleton.py 规范（推上 GitHub）
+### homework.py 规范
 - 函数签名 + docstring（含 doctest）
 - 函数体用 `pass` 占位
-- 顶部注明运行方式：`cp homework_skeleton.py homework.py && python3 grader.py`
-
-### homework.py（用户本地，.gitignore 忽略）
-- 从 `homework_skeleton.py` 复制后填写实现
+- 顶部注明运行方式：`python3 grader.py`
 
 ### grader.py 规范
 - `import importlib` 动态导入 `homework.py`
@@ -115,8 +111,8 @@ XX-章节名/
 - 每题附「要点」解释关键思路和常见错误
 
 ### 答案文件约定
-- `homework.py`, `solutions.md`, `solutions.tex` 由 `.gitignore` 忽略，不推上 GitHub
-- 新用户 clone 后自行 `cp homework_skeleton.py homework.py` 开始
+- `solutions.md`, `solutions.tex` 由 `.gitignore` 忽略，不推上 GitHub
+- `homework.py` 是代码骨架模板（`pass` 占位），正常提交
 
 ---
 

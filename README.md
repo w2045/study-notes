@@ -35,11 +35,10 @@ XX-章节名/
 ├── notes.md
 ├── 理论题/                    # 数学类有，编程类无
 │   ├── homework.tex
-│   └── solutions.tex
+│   └── solutions.tex          # .gitignore 忽略
 └── 编程题/ 或 作业/
     ├── homework.md            # 题目描述
-    ├── homework_skeleton.py   # 代码骨架（推上 GitHub）
-    ├── homework.py            # 用户填写（.gitignore 忽略）
+    ├── homework.py            # 代码骨架（pass 占位）
     ├── grader.py              # 自动批改
     └── solutions.md           # 参考答案（.gitignore 忽略）
 ```
@@ -51,7 +50,7 @@ XX-章节名/
 ├── notes.md
 └── 理论题/
     ├── homework.tex
-    └── solutions.tex
+    └── solutions.tex          # .gitignore 忽略
 ```
 
 ## 使用方式
@@ -76,12 +75,9 @@ code .          # 在 VS Code 中打开
 
 ```bash
 cd Python基础/01-表达式与函数/作业
-cp homework_skeleton.py homework.py   # 复制骨架文件
 # 编辑 homework.py，填写函数体
 python3 grader.py    # 自动批改
 ```
-
-> 注意：`homework.py` 和 `solutions.md` 被 `.gitignore` 忽略，不会推上 GitHub——这样你的答案只在本地，不会影响仓库的其他人。
 
 ### 做理论作业
 
