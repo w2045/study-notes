@@ -33,17 +33,41 @@ Study/
 └── resources/              # 论文列表、外部链接
 ```
 
-## 每章结构（文件夹模式）
+## 每章结构（文件夹模式，按学科类型区分）
 
-每章是一个文件夹，包含：
+### 数学类（线性代数 / 微积分 / 概率论 / 凸优化 / 信息论）
+理论与编程双重练习：
 
 ```
 学科名/XX-章节名/
-├── notes.md        # 参考笔记（详细版）
-├── homework.md     # 作业题目（≥10 题）
-├── homework.py     # Python 代码骨架，学生填写
-├── grader.py       # 自动批改脚本
-└── solutions.md    # 参考答案（<details> 折叠）
+├── notes.md         # 参考笔记
+├── homework.tex     # 理论题（LaTeX，留作答区，我读取批改）
+├── homework.py      # 编程题（Python 实现）
+├── grader.py        # 编程题自动批改
+├── solutions.tex    # 理论题答案
+└── solutions.md     # 编程题答案（<details> 折叠）
+```
+
+### 编程类（Python基础 / 数据结构与算法）
+纯编程练习，自动批改：
+
+```
+学科名/XX-章节名/
+├── notes.md
+├── homework.md      # 题目描述（≥10 题）
+├── homework.py      # 代码骨架
+├── grader.py        # 自动批改
+└── solutions.md     # 参考答案（<details> 折叠）
+```
+
+### 工具类（基础工具）
+轻量练习，手动检查：
+
+```
+学科名/XX-章节名/
+├── notes.md
+├── homework.md      # 练习题（6-8 题）
+└── solutions.md     # 参考答案（<details> 折叠）
 ```
 
 ### notes.md 规范
