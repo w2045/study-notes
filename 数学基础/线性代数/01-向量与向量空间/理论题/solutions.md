@@ -157,7 +157,7 @@ $$\mathbf{v} = \sum_{i=1}^{n} c_i \mathbf{b}_i = \sum_{i=1}^{n} d_i \mathbf{b}_i
 
 $$\sum_{i=1}^{n} (c_i - d_i) \mathbf{b}_i = \mathbf{0}$$
 
-由于 $\mathcal{B}$ 线性无关，必须 $c_i - d_i = 0$ 对每个 $i$ 成立，即 $c_i = d_i$。表示唯一。$\square$
+由于 $\mathcal{B}$ 线性无关，必须 $c_i - d_i = 0$ 对每个 $i$ 成立，即 $c_i = d_i$。表示唯一。证毕
 
 </details>
 
@@ -191,7 +191,7 @@ $$U \cap W = \{[t, t, t]^T \mid t \in \mathbb{R}\}$$
 
 $$\mathbf{v}_j = -\frac{1}{c_j} \sum_{i \neq j} c_i \mathbf{v}_i$$
 
-即 $\mathbf{v}_j$ 可表示为其余向量的线性组合。$\square$
+即 $\mathbf{v}_j$ 可表示为其余向量的线性组合。证毕
 
 **注意**：这并不意味着**每个**向量都能被其余向量表示——只保证至少有一个可以。例如 $\{[1,0]^T, [2,0]^T, [0,1]^T\}$ 线性相关，但第三个向量不能由前两个表示。
 

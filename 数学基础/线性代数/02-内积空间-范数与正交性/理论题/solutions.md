@@ -141,7 +141,7 @@ $$\leq \|\mathbf{u}\|^2 + 2|\langle \mathbf{u}, \mathbf{v} \rangle| + \|\mathbf{
 $$\leq \|\mathbf{u}\|^2 + 2\|\mathbf{u}\|\|\mathbf{v}\| + \|\mathbf{v}\|^2 \quad \text{（Cauchy-Schwarz）}$$
 $$= (\|\mathbf{u}\| + \|\mathbf{v}\|)^2$$
 
-两边开平方（范数非负）：$\|\mathbf{u} + \mathbf{v}\| \leq \|\mathbf{u}\| + \|\mathbf{v}\|$。$\square$
+两边开平方（范数非负）：$\|\mathbf{u} + \mathbf{v}\| \leq \|\mathbf{u}\| + \|\mathbf{v}\|$。证毕
 
 </details>
 
@@ -157,7 +157,7 @@ $$= (\|\mathbf{u}\| + \|\mathbf{v}\|)^2$$
 
 $$\langle \sum_i c_i \mathbf{v}_i, \mathbf{v}_j \rangle = c_j \langle \mathbf{v}_j, \mathbf{v}_j \rangle = c_j \|\mathbf{v}_j\|^2 = 0$$
 
-由于 $\|\mathbf{v}_j\|^2 > 0$（非零），必须 $c_j = 0$。这对所有 $j$ 成立，所以只有零解。线性无关。$\square$
+由于 $\|\mathbf{v}_j\|^2 > 0$（非零），必须 $c_j = 0$。这对所有 $j$ 成立，所以只有零解。线性无关。证毕
 
 </details>
 
