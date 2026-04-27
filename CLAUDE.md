@@ -9,6 +9,7 @@
 1. 将本次完成的内容落盘
 2. 更新 `PROGRESS.md`：标记已完成的章节、记录「下次从 X 开始」
 3. 确保所有交叉引用链接正确
+4. Commit + push 到 `origin main`（远程: `https://github.com/w2045/study-notes`）
 
 ## 产出格式：参考书风格
 每个章节文件为 Markdown（数学用 `$$` / `$` LaTeX 嵌入），必须包含：
