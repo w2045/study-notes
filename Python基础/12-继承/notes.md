@@ -120,7 +120,34 @@ class Duck(Animal, Flyer, Swimmer):
 ('Quack!', 'I can fly!', 'I can swim!')
 ```
 
-**钻石问题**：当多个父类有共同祖先时，MRO 保证每个类只被访问一次。复杂的多继承在 Python 中合法，但应谨慎使用。
+**钻石问题**：当多个父类有共同祖先时，Python 通过 MRO 保证每个类的方法只被查找一次，顺序确定不混乱：
+
+```python
+class A:
+    def method(self):
+        return "A"
+
+class B(A):
+    def method(self):
+        return "B" + super().method()
+
+class C(A):
+    def method(self):
+        return "C" + super().method()
+
+class D(B, C):           # D 继承 B 和 C，B 和 C 都继承 A（菱形！）
+    def method(self):
+        return "D" + super().method()
+
+>>> D.__mro__             # 看查找顺序
+(D, B, C, A, object)
+>>> D().method()          # D → B → C → A，每类只走一次
+'DBCA'
+```
+
+`super()` 沿 MRO 链调用下一个类——不是简单的「调用父类」。钻石结构中，MRO 保证了 `A.method` 只被调用一次（在最后），不会被 `B` 和 `C` 各调一次造成重复。这就是 C3 线性化算法的价值。
+
+复杂的多继承在 Python 中合法，但应谨慎使用。当继承层次变深时，`super()` 的行为可能令人意外——理解 MRO 是调试它的唯一途径。
 
 ---
 
@@ -175,7 +202,52 @@ class Car:
         self.engine.start()
 ```
 
-**原则**：能用组合时优先用组合。继承引入了紧耦合——子类的修可能破坏父类的假设。
+**原则**：能用组合时优先用组合。继承引入紧耦合——子类修改可能破坏父类假设，而组合通过接口通信，双方独立演化。
+
+**一个具体权衡**：假设你要实现一个 `Stack`。两种方式：
+
+```python
+# 继承方式：Stack IS-A list
+class Stack(list):
+    def push(self, item):
+        self.append(item)
+    def pop(self):                     # 覆盖了 list.pop！
+        return super().pop()
+
+>>> s = Stack()
+>>> s.push(1); s.push(2)
+>>> s.pop()
+2
+>>> s.insert(0, 99)                   # 不——list.insert 仍然可用！
+>>> s[0]                               # 用索引直接访问，破坏了栈的语义
+99
+```
+
+继承暴露了父类的**全部接口**，包括不该在栈上使用的 `insert`、`sort`、索引赋值等。用户可以用这些方法破坏栈的 LIFO 约束。
+
+```python
+# 组合方式：Stack HAS-A list
+class Stack:
+    def __init__(self):
+        self._items = []               # 列表藏在里面
+    def push(self, item):
+        self._items.append(item)
+    def pop(self):
+        return self._items.pop()
+    def __len__(self):
+        return len(self._items)
+
+>>> s = Stack()
+>>> s.push(1)
+>>> s.insert(0, 99)                   # AttributeError —— insert 不存在！
+```
+
+组合只暴露你**选择暴露**的方法——接口简洁、不变量受保护。代价是如果要支持 `len(s)`、`for x in s` 等 Python 协议，需要手动转发（如上文的 `__len__`）。
+
+**选择指南**：
+- 继承：子类**确实是**父类的一种（Dog IS-A Animal），且你希望复用父类的大部分接口
+- 组合：子类**拥有**另一个对象作为实现细节（Stack HAS-A list），只暴露精选接口
+- 多继承：在 Python 中，Mixin 类（只提供方法的轻量类）是多继承的合理用例——如 `class MyView(APIView, LoggingMixin, AuthMixin)`。避免深层次的「是」关系多继承
 
 ---
 

@@ -133,6 +133,61 @@ def gen2():
 [1, 2, 3, 4]
 ```
 
+### 3.4 双向通信：`send()`、`throw()`、`close()`
+
+`yield` 不仅仅是「产出」——它也可以**接收**外部传入的值。这使生成器升级为**协程**（coroutine），可以在运行中途与外部交互：
+
+```python
+def echo():
+    """每轮接收一个值，处理完后产出结果"""
+    while True:
+        received = yield                    # 暂停，等待 send() 传入值
+        print(f"收到: {received}")
+        yield f"已处理: {received}"
+
+>>> g = echo()
+>>> next(g)                   # 启动生成器，停在第一个 yield
+>>> g.send("hello")           # 传入 "hello"，生成器从 yield 恢复
+收到: hello
+'已处理: hello'
+>>> next(g)                   # 继续到下一个 yield（此时 receive = None）
+收到: None
+'已处理: None'
+```
+
+`send(value)` 做了两件事：把 `value` 传给当前暂停的 `yield` 表达式 → 恢复执行直到下一个 `yield`。注意第一次调用必须用 `next()` 或 `send(None)` 启动，因为此时还没有 `yield` 可以接收值。
+
+**`throw()` — 向生成器注入异常**：
+
+```python
+def resilient():
+    try:
+        while True:
+            yield "运行中"
+    except ValueError:
+        yield "捕获了 ValueError"
+
+>>> g = resilient()
+>>> next(g)
+'运行中'
+>>> g.throw(ValueError)      # 在生成器内部抛出异常
+'捕获了 ValueError'
+```
+
+**`close()` — 优雅关闭生成器**：向生成器内部抛出 `GeneratorExit`，常用于清理资源（关闭文件、释放锁等）：
+
+```python
+def read_lines(path):
+    f = open(path)
+    try:
+        for line in f:
+            yield line.strip()
+    finally:
+        f.close()             # 无论正常结束还是 close() 都会执行
+```
+
+这三个方法让生成器从「单向数据流」（只产出）变成「双向对话」——这是 `asyncio` 中 `async`/`await` 协程的底层基础。
+
 ---
 
 ## 4. 迭代器协议：手动实现

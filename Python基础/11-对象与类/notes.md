@@ -78,6 +78,47 @@ buddy.bark()
   沿 self 找到 name="Buddy"
 ```
 
+### 3.1 属性查找：`obj.attr` 到底做了什么？
+
+理解属性查找是理解 Python 面向对象的枢纽——它直接连通到第十二章的 MRO（方法解析顺序）。
+
+当你写 `buddy.name` 时，Python 按以下顺序查找：
+
+```
+1. 实例的 __dict__  →  {"name": "Buddy", "age": 3}
+2. 类的 __dict__     →  {species, __init__, bark, human_age, ...}
+3. 父类的 __dict__   →  沿着 MRO 链向上（第十二章展开）
+```
+
+可以手动验证：
+
+```python
+>>> buddy = Dog("Buddy", 3)
+>>> buddy.__dict__                         # 实例自己的属性
+{'name': 'Buddy', 'age': 3}
+>>> Dog.__dict__['species']                # 类属性，不在实例中
+'Canis familiaris'
+>>> buddy.species                          # 但可以通过实例访问——Python 会自动向上查找
+'Canis familiaris'
+```
+
+**方法也是通过这个机制找到的**：`buddy.bark` 在实例 `__dict__` 中找不到，于是去 `Dog.__dict__` 中找到 `bark` 函数对象。调用时，Python 自动把 `buddy` 作为 `self` 传入——等价于 `Dog.bark(buddy)`。
+
+**类属性共享的陷阱**：如果类属性是可变对象（如列表），所有实例共享同一个对象：
+
+```python
+class Team:
+    members = []             # 类属性——所有实例共享！
+
+>>> a = Team()
+>>> b = Team()
+>>> a.members.append("Alice")
+>>> b.members                # b 也看到了！
+['Alice']
+```
+
+这往往是 bug 的源头。可变属性应该放到 `__init__` 中（每实例独立），不可变常量（如 `species = "Canis familiaris"`）用类属性是安全的。
+
 ---
 
 ## 4. 方法类型
@@ -142,6 +183,34 @@ Vector(4, 6)
 >>> v1 == Vector(3, 4)
 True
 ```
+
+### 4.3 `__str__` vs `__repr__` —— 给谁看的？
+
+这两个方法很容易混淆，但目的完全不同：
+
+| | `__str__` | `__repr__` |
+|---|---|---|
+| 目标读者 | 用户（人） | 开发者（调试） |
+| 触发方式 | `print(obj)`, `str(obj)`, f-string `{obj}` | `repr(obj)`, 交互环境直接输入对象, 容器的 `__str__` |
+| 目标 | 可读性好 | 无歧义，最好能 `eval` 还原 |
+| 没定义时的回退 | 找 `__repr__` | 显示默认 `<ClassName at 0x...>` |
+
+关键差异演示：
+
+```python
+>>> from datetime import datetime
+>>> now = datetime.now()
+>>> print(now)              # 用 __str__ → 给人看
+2026-04-28 14:30:00
+>>> repr(now)               # 用 __repr__ → 调试用，可 eval 还原
+'datetime.datetime(2026, 4, 28, 14, 30, 0, 123456)'
+
+>>> # 容器总是用 __repr__ 显示元素
+>>> print([now])            # 列表的 __str__ 调用元素的 __repr__
+[datetime.datetime(2026, 4, 28, 14, 30, 0, 123456)]
+```
+
+**原则**：至少实现 `__repr__`。如果你只定义一个，定义 `__repr__`——`__str__` 在没定义时会回退到 `__repr__`，反过来则会丢失调试信息。
 
 ---
 
