@@ -100,6 +100,8 @@ def make_multiplier(a):
 
 名字查找沿 parent 链从内向外：`multiply` 帧 → 帧 `{b=3, parent→F1}` → 帧 `F1 {a=2, parent→Global}`。
 
+环境图让我们看清了闭包的内部机制。到目前为止，创建函数一直用 `def`。但还有一种等价写法——`lambda`，它创建一个没有名字的函数，可以作为**表达式**嵌在任何需要值的地方。
+
 ---
 
 ## 4. Lambda：匿名函数
@@ -176,6 +178,8 @@ def make_power(n):
 # ✅ 但可以用条件表达式
 safe_sign = lambda x: 1 if x > 0 else (-1 if x < 0 else 0)
 ```
+
+`lambda` 简短但有一处出名容易踩的坑——当它与循环和闭包结合时。上一节讲了闭包捕获的是名字绑定而非值的快照，这在循环中创建多个 lambda 时会产生违反直觉的结果。
 
 ---
 
@@ -256,6 +260,8 @@ def make_counter():
     return counter
 ```
 
+搞清楚了陷阱和修复方法，现在看 Lambda 在实际代码中最高频的用法——配合 `sorted`、`map`、`filter` 等内置高阶函数，用一行表达式完成常见的数据处理任务。
+
 ---
 
 ## 6. Lambda 常见模式
@@ -302,11 +308,11 @@ cube   = partial(power, exp=3)
 
 `partial` 本质上就是帮你写 `lambda base: power(base, 2)`。
 
+Lambda 在 `sorted(key=...)` 和 `map(...)` 里用起来很方便。但在环境图里，它和 `def` 有什么区别？答案是：**没有区别**。Lambda 创建的函数对象和 `def` 创建的函数对象内部结构完全相同——都有一个 parent 指针指向定义时的环境。唯一的区别是 `lambda` 没有名字。
+
 ---
 
 ## 7. 环境模型中的 Lambda
-
-Lambda 创建的函数和环境图中的 def 函数完全相同——都有一个 parent 指针指向定义时的环境。区别仅在于 `lambda` 没有名字：
 
 ```python
 # 这两个在环境图中产生的结构完全相同
@@ -315,6 +321,8 @@ def f(x): return x + n       # 函数对象有名字 "f"，f 指向它
 ```
 
 匿名函数在环境图中显示为 `λ(x) <line N>` 而非 `func_name(x)`。
+
+环境模型展示了函数对象的运行时行为。在 Python 中，函数对象还携带丰富的元信息——名字、参数个数、字节码——可以在运行时检查。`def` 和 `lambda` 创建的函数的区别在这些元信息里也能看到。
 
 ---
 
